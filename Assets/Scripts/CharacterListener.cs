@@ -6,6 +6,9 @@ using SocketIOClient;
 using System.Threading;
 using System.Collections.Concurrent;
 using System;
+using System.Collections.Generic;
+using Unity.VisualScripting;
+
 public class CharacterListener : MonoBehaviour
 {
 
@@ -17,30 +20,51 @@ public class CharacterListener : MonoBehaviour
 
     public GameObject characterPanelPrefab;
 
+    Datas initData;
+    [SerializeField] GameObject dataObject;
+    List<Character> datas;
+    
+
     // Start is called before the first frame update
-    private IEnumerator Start()
+    private void Start()
     {
         initClient = clientObject.GetComponent<InitiatlisationClient>();
+        initData = dataObject.GetComponent<Datas>();
 
         // Create a new thread in order to run the InitSocketThread method
         var thread = new Thread(SocketThread);
         // start the thread
         thread.Start();
 
-        // Wait until a callback action is added to the queue
-        yield return new WaitUntil(() => _mainThreadhActions.Count > 0);
+        StartCoroutine(myUpdate());
 
-        // If this fails something is wrong ^^
-        // simply get the first added callback
-        if (!_mainThreadhActions.TryDequeue(out var action))
-        {
-            Debug.LogError("Something Went Wrong ! ", this);
-            yield break;
-        }
-
-        // Execute the code of the added callback
-        action?.Invoke();
     }
+
+    private IEnumerator myUpdate()
+    {
+        while (true)
+        {
+            // Wait until a callback action is added to the queue
+            yield return new WaitUntil(() => _mainThreadhActions.Count > 0);
+
+            // If this fails something is wrong ^^
+            // simply get the first added callback
+            if (!_mainThreadhActions.TryDequeue(out var action))
+            {
+                Debug.LogError("Something Went Wrong ! ", this);
+                yield break;
+            }
+
+            // Execute the code of the added callback
+            action?.Invoke();
+        }
+    }
+
+    private void Update()
+    {
+
+    }
+
 
     void SocketThread()
     {
@@ -49,6 +73,7 @@ public class CharacterListener : MonoBehaviour
 
             Debug.Log("Client null");
             initialisationClient();
+            datas = initData.characterslList;  
             Thread.Sleep(500);
         }
 
@@ -61,10 +86,12 @@ public class CharacterListener : MonoBehaviour
             _mainThreadhActions.Enqueue(() =>
             {
                 // This will be executed after the next Update call
-                PlayerInfo playerInfo = JsonUtility.FromJson<PlayerInfo>(data.GetValue(0).ToString());
-                CharacterInfo characterInfo = playerInfo.character;
 
-                addCharacterPanel(characterInfo);
+                PlayerInfo playerInfo = JsonUtility.FromJson<PlayerInfo>(playerJson.ToString());
+                CharacterInfo characterInfo = playerInfo.character;
+                Character character = new(characterInfo.id, characterInfo.name, characterInfo.life, characterInfo.lifeMax, characterInfo.description);
+                datas.Add(character);
+                addCharacterPanel(character);
             });
         });
 
@@ -77,7 +104,6 @@ public class CharacterListener : MonoBehaviour
             {
                 // This will be executed after the next Update call
                 UpdateLife updateLife = JsonUtility.FromJson<UpdateLife>(data.GetValue(0).ToString());
-
                 updateLifeCharacter(updateLife);
             });
         });
@@ -92,37 +118,43 @@ public class CharacterListener : MonoBehaviour
 
     public void updateLifeCharacter(UpdateLife updateLife)
     {
-
-        // recuperer panel du joueur
-        // changer life dans panel 
-
+        // récuperer le character dans les data
+        Character character = datas.Find(c => c.id == updateLife.id);
+        // lui enlever de la vie
+        character.life = updateLife.life;
+        Debug.Log("update function: " + character.life);
+        character.panel.transform.Find("LifeValue").GetComponent<TextMeshProUGUI>().text = character.life.ToString();
     }
 
-    public void addCharacterPanel(CharacterInfo characterInfo)
+    public void addCharacterPanel(Character character)
     {
+        
         // Create the panel 
         GameObject characterPanel = Instantiate(characterPanelPrefab);
         characterPanel.transform.position = gameObject.transform.position;
         characterPanel.GetComponent<RectTransform>().SetParent(gameObject.transform);
 
         // Set the informations about the player 
-        characterPanel.transform.Find("Name").GetComponent<TextMeshProUGUI>().text=characterInfo.name;
+
+        characterPanel.transform.Find("Name").GetComponent<TextMeshProUGUI>().text=character.name;
         TextMeshProUGUI lifeText = characterPanel.transform.Find("LifeValue").GetComponent<TextMeshProUGUI>();
-        lifeText.text =characterInfo.life.ToString();
-        characterPanel.transform.Find("LifeMax").GetComponent<TextMeshProUGUI>().text =characterInfo.lifeMax.ToString();
-        characterPanel.transform.Find("Description").GetComponent<TextMeshProUGUI>().text =characterInfo.description;
+        lifeText.text =character.life.ToString();
+        characterPanel.transform.Find("LifeMax").GetComponent<TextMeshProUGUI>().text =character.lifeMax.ToString();
+        characterPanel.transform.Find("Description").GetComponent<TextMeshProUGUI>().text =character.description;
 
         // Set the action of the button 
         var removeLifeButton = characterPanel.transform.Find("ButtonRemoveLife").GetComponent<Button>() as Button;
-        removeLifeButton.onClick.AddListener(delegate { sendRemoveLife(lifeText, characterInfo.id, characterInfo.life); });
+        removeLifeButton.onClick.AddListener(delegate { sendRemoveLife(character, lifeText); });
+
+        character.LinkPanel(characterPanel);
     }
 
-    private async void sendRemoveLife(TextMeshProUGUI lifeText, int id, int life)
+    private async void sendRemoveLife(Character character, TextMeshProUGUI lifeText)
     {
-        lifeText.text = (life -10).ToString();
-        UpdateLife up = new UpdateLife() { id = id, life = life -10};
+        character.life -= 10;
+        //lifeText.text = character.life.ToString(); ;
+        UpdateLife up = new UpdateLife() { id = character.id, life = character.life};
         string json = JsonUtility.ToJson(up);
-        Debug.Log(json);
         await client.EmitAsync("updateLifeCharacter",json);
         Debug.Log("remove 10 point of life");
     }
@@ -136,6 +168,7 @@ public class PlayerInfo
     public CharacterInfo character;
 }
 
+
 [Serializable]
 public class CharacterInfo
 {
@@ -144,6 +177,7 @@ public class CharacterInfo
     public int lifeMax;
     public int life;
     public string description;
+
 }
 
 [Serializable]
