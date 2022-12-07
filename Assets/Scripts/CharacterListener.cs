@@ -8,18 +8,22 @@ using System.Collections.Concurrent;
 using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEngine.UIElements;
 
 public class CharacterListener : MonoBehaviour
 {
 
+    // Socket and mainthread
     InitiatlisationClient initClient;
     [SerializeField] GameObject clientObject;
     SocketIO client;
-
     private readonly ConcurrentQueue<Action> _mainThreadhActions = new ConcurrentQueue<Action>();
 
+    // Prefabs
     public GameObject characterPanelPrefab;
+    public GameObject characterButtonPrefab;
 
+    // Datas
     Datas initData;
     [SerializeField] GameObject dataObject;
     List<Character> datas;
@@ -60,10 +64,6 @@ public class CharacterListener : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-
-    }
 
 
     void SocketThread()
@@ -91,7 +91,8 @@ public class CharacterListener : MonoBehaviour
                 CharacterInfo characterInfo = playerInfo.character;
                 Character character = new(characterInfo.id, characterInfo.name, characterInfo.life, characterInfo.lifeMax, characterInfo.description);
                 datas.Add(character);
-                addCharacterPanel(character);
+                //addCharacterPanel(character);
+                addCharacterToScroolView(character);
             });
         });
 
@@ -143,7 +144,7 @@ public class CharacterListener : MonoBehaviour
         characterPanel.transform.Find("Description").GetComponent<TextMeshProUGUI>().text =character.description;
 
         // Set the action of the button 
-        var removeLifeButton = characterPanel.transform.Find("ButtonRemoveLife").GetComponent<Button>() as Button;
+        var removeLifeButton = characterPanel.transform.Find("ButtonRemoveLife").GetComponent<UnityEngine.UI.Button>() as UnityEngine.UI.Button;
         removeLifeButton.onClick.AddListener(delegate { sendRemoveLife(character, lifeText); });
 
         character.LinkPanel(characterPanel);
@@ -158,7 +159,27 @@ public class CharacterListener : MonoBehaviour
         await client.EmitAsync("updateLifeCharacter",json);
         Debug.Log("remove 10 point of life");
     }
+
+    public void addCharacterToScroolView(Character character)
+    {
+        GameObject characterButton = Instantiate(characterButtonPrefab);
+        characterButton.transform.Find("TextOfButton").GetComponent<TextMeshProUGUI>().text = character.name;
+    
+        characterButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate { printInfoCharacter(character); });
+
+        //GameObject scrollView = gameObject.transform.Find("ScrollViewSelectionPlayer").Find("ViewPort");
+        //Debug.Log(scrollView);
+        //characterButton.transform.SetParent(gameObject.transform.Find("ScrollViewSelectionPlayer").GetComponentInChildren);
+
+    }
+
+    public void printInfoCharacter(Character character )
+    {
+        Debug.Log("print character infos");
+    }
 }
+
+
 
 
 [Serializable]
