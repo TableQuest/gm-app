@@ -13,6 +13,8 @@ public class InitiatlisationClient : MonoBehaviour
     // Start is called before the first frame update
     private IEnumerator Start()
     {
+        DontDestroyOnLoad(gameObject);
+
         // Create a new thread in order to run the InitSocketThread method
         var thread = new Thread(InitSocketThread);
         // start the thread

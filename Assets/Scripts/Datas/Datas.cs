@@ -6,43 +6,16 @@ using UnityEngine.Networking;
 
 public class Datas : MonoBehaviour
 {
-    public List<Character> characterslList;
+    public List<Character> charactersList;
     private const string URL = "localhost:3000";
 
-    // Start is called before the first frame update
-    void Start()
+    public Datas()
     {
-        //StartCoroutine(GetAllPlayers(URL+"/characters"));
-        // init characterList with rest request
-        
-
+        charactersList = new List<Character>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Start()
     {
-        
-    }
-
-
-
-    IEnumerator GetAllPlayers(string url)
-    {
-        UnityWebRequest www = UnityWebRequest.Get(url);
-        yield return www.SendWebRequest();
-
-        if (www.result != UnityWebRequest.Result.Success)
-        {
-            Debug.Log(www.error);
-        }
-        else
-        {
-            // Show results as text
-            string data =www.downloadHandler.text;
-            Debug.Log(data);
-            characterslList = JsonUtility.FromJson<List<Character>>(data);
-            Debug.Log(characterslList);
-
-        }
+        DontDestroyOnLoad(gameObject);
     }
 }

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class Character : MonoBehaviour
+public class Character
 {
     public int id;
     public string name;
@@ -16,10 +16,12 @@ public class Character : MonoBehaviour
         this.name = name;
         this.lifeMax = lifeMax;
         this.description = description;
+        this.panel = null;
     }
 
     public void LinkPanel(GameObject panel)
     {
         this.panel = panel;
     }
+
 }

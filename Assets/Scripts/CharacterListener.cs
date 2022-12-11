@@ -1,46 +1,53 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 using SocketIOClient;
 using System.Threading;
 using System.Collections.Concurrent;
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine.UIElements;
-
+using System.Net;
+using System.IO;
+using UnityEngine.SceneManagement;
+using UnityEditor;
 public class CharacterListener : MonoBehaviour
 {
 
-    // Socket and mainthread
+    // Socket 
     InitiatlisationClient initClient;
     [SerializeField] GameObject clientObject;
     SocketIO client;
+
+    // Main thread
     private readonly ConcurrentQueue<Action> _mainThreadhActions = new ConcurrentQueue<Action>();
 
     // Prefabs
-    public GameObject characterPanelPrefab;
     public GameObject characterButtonPrefab;
+    public Transform scrollViewContent;
 
     // Datas
-    Datas initData;
+    Datas initDatas;
     [SerializeField] GameObject dataObject;
-    List<Character> datas;
-    
+    List<Character> listCharacter;
 
-    // Start is called before the first frame update
+
+
+    [MenuItem("MyAssets/Datas")]
     private void Start()
     {
         initClient = clientObject.GetComponent<InitiatlisationClient>();
-        initData = dataObject.GetComponent<Datas>();
 
-        // Create a new thread in order to run the InitSocketThread method
+        dataObject = GameObject.Find("DataContainer");
+        initDatas = dataObject.GetComponent<Datas>();
+        listCharacter = initDatas.charactersList;
+
+
         var thread = new Thread(SocketThread);
-        // start the thread
         thread.Start();
 
         StartCoroutine(myUpdate());
+
+        GetAlreadyChosenCharacters();
 
     }
 
@@ -48,68 +55,16 @@ public class CharacterListener : MonoBehaviour
     {
         while (true)
         {
-            // Wait until a callback action is added to the queue
             yield return new WaitUntil(() => _mainThreadhActions.Count > 0);
 
-            // If this fails something is wrong ^^
-            // simply get the first added callback
             if (!_mainThreadhActions.TryDequeue(out var action))
             {
                 Debug.LogError("Something Went Wrong ! ", this);
                 yield break;
             }
 
-            // Execute the code of the added callback
             action?.Invoke();
         }
-    }
-
-
-
-    void SocketThread()
-    {
-        while (client == null)
-        {
-
-            Debug.Log("Client null");
-            initialisationClient();
-            datas = initData.characterslList;  
-            Thread.Sleep(500);
-        }
-
-        client.On("characterSelection", (data) =>
-
-        {
-            System.Text.Json.JsonElement playerJson = data.GetValue(0);
-            // Simply wrap your main thread code by wrapping it in a lambda expression
-            // which is enqueued to the thread-safe queue
-            _mainThreadhActions.Enqueue(() =>
-            {
-                // This will be executed after the next Update call
-
-                PlayerInfo playerInfo = JsonUtility.FromJson<PlayerInfo>(playerJson.ToString());
-                CharacterInfo characterInfo = playerInfo.character;
-                Character character = new(characterInfo.id, characterInfo.name, characterInfo.life, characterInfo.lifeMax, characterInfo.description);
-                datas.Add(character);
-                //addCharacterPanel(character);
-                addCharacterToScroolView(character);
-            });
-        });
-
-        client.On("updateLifeCharacter", (data) =>
-        {
-            System.Text.Json.JsonElement playerJson = data.GetValue(0);
-            // Simply wrap your main thread code by wrapping it in a lambda expression
-            // which is enqueued to the thread-safe queue
-            _mainThreadhActions.Enqueue(() =>
-            {
-                // This will be executed after the next Update call
-                UpdateLife updateLife = JsonUtility.FromJson<UpdateLife>(data.GetValue(0).ToString());
-                updateLifeCharacter(updateLife);
-            });
-        });
-
-
     }
 
     private void initialisationClient()
@@ -117,70 +72,106 @@ public class CharacterListener : MonoBehaviour
         client = initClient.client;
     }
 
-    public void updateLifeCharacter(UpdateLife updateLife)
+    void SocketThread()
     {
-        // récuperer le character dans les data
-        Character character = datas.Find(c => c.id == updateLife.id);
-        // lui enlever de la vie
-        character.life = updateLife.life;
-        Debug.Log("update function: " + character.life);
-        character.panel.transform.Find("LifeValue").GetComponent<TextMeshProUGUI>().text = character.life.ToString();
+        while (client == null)
+        {
+
+            initialisationClient();
+            Thread.Sleep(500);
+        }
+        while(initDatas == null)
+        {
+            initDatas = dataObject.GetComponent<Datas>();
+            Thread.Sleep(300);
+        }
+
+        client.On("characterSelection", (data) =>
+
+        {
+            System.Text.Json.JsonElement playerJson = data.GetValue(0);
+            _mainThreadhActions.Enqueue(() =>
+            {
+
+                PlayerInfo playerInfo = JsonUtility.FromJson<PlayerInfo>(playerJson.ToString());
+                CharacterInfo characterInfo = playerInfo.character;
+
+                Character character = AddCharacterToData(characterInfo);
+                if (character != null)
+                {
+                    AddCharacterToScroolView(character);
+                }
+
+            });
+        });
+
     }
 
-    public void addCharacterPanel(Character character)
+
+
+    private bool CharacterAlreadyChosen(string idCharacter)
     {
-        
-        // Create the panel 
-        GameObject characterPanel = Instantiate(characterPanelPrefab);
-        characterPanel.transform.position = gameObject.transform.position;
-        characterPanel.GetComponent<RectTransform>().SetParent(gameObject.transform);
-
-        // Set the informations about the player 
-
-        characterPanel.transform.Find("Name").GetComponent<TextMeshProUGUI>().text=character.name;
-        TextMeshProUGUI lifeText = characterPanel.transform.Find("LifeValue").GetComponent<TextMeshProUGUI>();
-        lifeText.text =character.life.ToString();
-        characterPanel.transform.Find("LifeMax").GetComponent<TextMeshProUGUI>().text =character.lifeMax.ToString();
-        characterPanel.transform.Find("Description").GetComponent<TextMeshProUGUI>().text =character.description;
-
-        // Set the action of the button 
-        var removeLifeButton = characterPanel.transform.Find("ButtonRemoveLife").GetComponent<UnityEngine.UI.Button>() as UnityEngine.UI.Button;
-        removeLifeButton.onClick.AddListener(delegate { sendRemoveLife(character, lifeText); });
-
-        character.LinkPanel(characterPanel);
+        foreach(Character c in initDatas.charactersList)
+        {
+            if(c.id.ToString() == idCharacter)
+            {
+                return true;
+            } 
+        }
+        return false;
     }
 
-    private async void sendRemoveLife(Character character, TextMeshProUGUI lifeText)
+    private void GetAlreadyChosenCharacters()
     {
-        character.life -= 10;
-        //lifeText.text = character.life.ToString(); ;
-        UpdateLife up = new UpdateLife() { id = character.id, life = character.life};
-        string json = JsonUtility.ToJson(up);
-        await client.EmitAsync("updateLifeCharacter",json);
-        Debug.Log("remove 10 point of life");
+        HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://localhost:3000/inGameCharacters");
+        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+        StreamReader reader = new StreamReader(response.GetResponseStream());
+
+        string JsonResponse = reader.ReadToEnd();
+
+        ListCharacter CharacterList = JsonUtility.FromJson<ListCharacter>(JsonResponse);
+
+        foreach(CharacterInfo c in CharacterList.characterList)
+        {
+            Character character = new Character(c.id, c.name, c.life, c.lifeMax, c.description);
+            initDatas.charactersList.Add(character);
+   
+            AddCharacterToScroolView(character);
+            
+        }
     }
 
-    public void addCharacterToScroolView(Character character)
+    public Character AddCharacterToData(CharacterInfo characterInfo)
+    {
+        if (!CharacterAlreadyChosen(characterInfo.id.ToString()))
+        {
+            Character character = new Character(characterInfo.id, characterInfo.name, characterInfo.life, characterInfo.lifeMax, characterInfo.description);
+            initDatas.charactersList.Add(character);
+
+            //addCharacterToScroolView(character);
+            return character;
+        }
+        return null;
+    }
+
+    private void AddCharacterToScroolView(Character character)
     {
         GameObject characterButton = Instantiate(characterButtonPrefab);
         characterButton.transform.Find("TextOfButton").GetComponent<TextMeshProUGUI>().text = character.name;
-    
-        characterButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate { printInfoCharacter(character); });
-
-        //GameObject scrollView = gameObject.transform.Find("ScrollViewSelectionPlayer").Find("ViewPort");
-        //Debug.Log(scrollView);
-        //characterButton.transform.SetParent(gameObject.transform.Find("ScrollViewSelectionPlayer").GetComponentInChildren);
-
+        characterButton.transform.SetParent(scrollViewContent);
     }
 
-    public void printInfoCharacter(Character character )
+    public void StartGame()
     {
-        Debug.Log("print character infos");
+        
+        // change state in the server
+        client.EmitAsync("switchState", "PLAYING");
+
+        // change the scene, here to player but to modify after
+        SceneManager.LoadScene("Player");
     }
+
 }
-
-
-
 
 [Serializable]
 public class PlayerInfo
@@ -202,8 +193,7 @@ public class CharacterInfo
 }
 
 [Serializable]
-public class UpdateLife
+public class ListCharacter
 {
-    public int id;
-    public int life;
+    public List<CharacterInfo> characterList;
 }
