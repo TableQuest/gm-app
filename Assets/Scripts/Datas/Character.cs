@@ -3,14 +3,16 @@ using UnityEngine;
 
 public class Character
 {
+    public string playerId;
     public int id;
     public string name;
     public int life;
     public int lifeMax;
     public string description;
     public GameObject panel;
-    public Character(int id, string name, int life, int lifeMax, string description)
+    public Character(string playerId, int id, string name, int life, int lifeMax, string description)
     {
+        this.playerId = playerId;
         this.life = life;
         this.id = id;
         this.name = name;

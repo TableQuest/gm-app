@@ -96,7 +96,7 @@ public class CharacterListener : MonoBehaviour
                 PlayerInfo playerInfo = JsonUtility.FromJson<PlayerInfo>(playerJson.ToString());
                 CharacterInfo characterInfo = playerInfo.character;
 
-                Character character = AddCharacterToData(characterInfo);
+                Character character = AddCharacterToData(playerInfo, characterInfo);
                 if (character != null)
                 {
                     AddCharacterToScroolView(character);
@@ -131,9 +131,10 @@ public class CharacterListener : MonoBehaviour
 
         ListCharacter CharacterList = JsonUtility.FromJson<ListCharacter>(JsonResponse);
 
-        foreach(CharacterInfo c in CharacterList.characterList)
+        foreach(CharacterForHttp chttp in CharacterList.characterList)
         {
-            Character character = new Character(c.id, c.name, c.life, c.lifeMax, c.description);
+            CharacterInfo c = chttp.characterInfo;
+            Character character = new Character(chttp.playerId,c.id, c.name, c.life, c.lifeMax, c.description);
             initDatas.charactersList.Add(character);
    
             AddCharacterToScroolView(character);
@@ -141,11 +142,11 @@ public class CharacterListener : MonoBehaviour
         }
     }
 
-    public Character AddCharacterToData(CharacterInfo characterInfo)
+    public Character AddCharacterToData(PlayerInfo playerInfo, CharacterInfo characterInfo)
     {
         if (!CharacterAlreadyChosen(characterInfo.id.ToString()))
         {
-            Character character = new Character(characterInfo.id, characterInfo.name, characterInfo.life, characterInfo.lifeMax, characterInfo.description);
+            Character character = new Character(playerInfo.player, characterInfo.id, characterInfo.name, characterInfo.life, characterInfo.lifeMax, characterInfo.description);
             initDatas.charactersList.Add(character);
 
             //addCharacterToScroolView(character);
@@ -184,6 +185,7 @@ public class PlayerInfo
 [Serializable]
 public class CharacterInfo
 {
+
     public int id;
     public string name;
     public int lifeMax;
@@ -193,7 +195,14 @@ public class CharacterInfo
 }
 
 [Serializable]
-public class ListCharacter
+public class CharacterForHttp
 {
-    public List<CharacterInfo> characterList;
+    public string playerId;
+    public CharacterInfo characterInfo;
+}
+
+[Serializable]
+public class ListCharacter
+{  
+    public List<CharacterForHttp> characterList;
 }

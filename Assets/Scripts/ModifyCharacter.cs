@@ -96,7 +96,7 @@ public class ModifyCharacter : MonoBehaviour
     public void updateLifeCharacter(UpdateLife updateLife)
     {
         // récuperer le character dans les data
-        Character character = initDatas.charactersList.Find(c => c.id == updateLife.id);
+        Character character = initDatas.charactersList.Find(c => c.playerId == updateLife.id);
         // lui enlever de la vie
         character.life = updateLife.life;
         Debug.Log("update function: " + character.life);
@@ -129,7 +129,7 @@ public class ModifyCharacter : MonoBehaviour
     {
         character.life -= 10;
         //lifeText.text = character.life.ToString(); ;
-        UpdateLife up = new UpdateLife() { id = character.id, life = character.life };
+        UpdateLife up = new UpdateLife() { id = character.playerId, life = character.life };
         string json = JsonUtility.ToJson(up);
         await client.EmitAsync("updateLifeCharacter", json);
         Debug.Log("remove 10 point of life");
@@ -168,6 +168,6 @@ public class ModifyCharacter : MonoBehaviour
 [Serializable]
 public class UpdateLife
 {
-    public int id;
+    public string id;
     public int life;
 }
