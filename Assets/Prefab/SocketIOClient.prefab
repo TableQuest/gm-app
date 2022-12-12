@@ -9,7 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3225466956684788661}
-  - component: {fileID: 3225466956684788660}
+  - component: {fileID: 1319060162184551363}
+  - component: {fileID: 2491434341566862676}
   m_Layer: 0
   m_Name: SocketIOClient
   m_TagString: Untagged
@@ -32,7 +33,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3225466956684788660
+--- !u!114 &1319060162184551363
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,6 +42,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 3225466956684788663}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a263d0e9482505541a458422e9247be4, type: 3}
+  m_Script: {fileID: 11500000, guid: 6e373c6c0a8391a478597c60ff89c391, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2491434341566862676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3225466956684788663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e181b1c4e97f50f4e99347d9c988b92b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  requestURI: 
