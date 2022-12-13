@@ -62,11 +62,6 @@ public class InitiatlisationClient : MonoBehaviour
         }
     }
 
-    public void Test()
-    {
-        Debug.Log("coucou");
-    }
-
     public void ClickConnect()
     {
         var input = GameObject.Find("Input").GetComponent<TMP_InputField>();
