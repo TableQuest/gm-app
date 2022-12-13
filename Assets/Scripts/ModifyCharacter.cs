@@ -13,7 +13,6 @@ public class ModifyCharacter : MonoBehaviour
     InitiatlisationClient initClient;
     [SerializeField] GameObject clientObject;
     SocketIO client;
-    private readonly ConcurrentQueue<Action> _mainThreadhActions = new ConcurrentQueue<Action>();
 
     // Prefabs
     public GameObject characterPanelPrefab;
@@ -42,30 +41,9 @@ public class ModifyCharacter : MonoBehaviour
         // start the thread
         thread.Start();
 
-        StartCoroutine(myUpdate());
-
         AddAllCharacterToScrollView();
     }
 
-    private IEnumerator myUpdate()
-    {
-        while (true)
-        {
-            // Wait until a callback action is added to the queue
-            yield return new WaitUntil(() => _mainThreadhActions.Count > 0);
-
-            // If this fails something is wrong ^^
-            // simply get the first added callback
-            if (!_mainThreadhActions.TryDequeue(out var action))
-            {
-                Debug.LogError("Something Went Wrong ! ", this);
-                yield break;
-            }
-
-            // Execute the code of the added callback
-            action?.Invoke();
-        }
-    }
 
     private void initialisationClient()
     {
@@ -78,14 +56,13 @@ public class ModifyCharacter : MonoBehaviour
         {
             initialisationClient();
             Thread.Sleep(500);
-
         }
 
 
         client.On("updateLifeCharacter", (data) =>
         {
             System.Text.Json.JsonElement playerJson = data.GetValue(0);
-            _mainThreadhActions.Enqueue(() =>
+            initClient._mainThreadhActions.Enqueue(() =>
             {
                 UpdateLife updateLife = JsonUtility.FromJson<UpdateLife>(data.GetValue(0).ToString());
                 updateLifeCharacter(updateLife);
@@ -96,7 +73,7 @@ public class ModifyCharacter : MonoBehaviour
 
     public void updateLifeCharacter(UpdateLife updateLife)
     {
-        // récuperer le character dans les data
+        // rï¿½cuperer le character dans les data
         Character character = initDatas.charactersList.Find(c => c.playerId == updateLife.id);
         // lui enlever de la vie
         character.life = updateLife.life;

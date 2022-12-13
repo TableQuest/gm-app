@@ -4,23 +4,25 @@ using SocketIOClient;
 using System.Threading;
 using System.Collections.Concurrent;
 using System;
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class InitiatlisationClient : MonoBehaviour
 {
 
-    private readonly ConcurrentQueue<Action> _mainThreadhActions = new ConcurrentQueue<Action>();
+    public readonly ConcurrentQueue<Action> _mainThreadhActions = new ConcurrentQueue<Action>();
     public SocketIO client;
 
     public string requestURI;
 
     // Start is called before the first frame update
-    private IEnumerator Start()
+    private void StartConnection()
     {
         if (requestURI == null)
         {
             requestURI = "http://localhost:3000";
         }
-
+        Debug.Log("Connection to : " + requestURI);
         DontDestroyOnLoad(gameObject);
 
         // Create a new thread in order to run the InitSocketThread method
@@ -28,21 +30,23 @@ public class InitiatlisationClient : MonoBehaviour
         // start the thread
         thread.Start();
 
-        // Wait until a callback action is added to the queue
-        yield return new WaitUntil(() => _mainThreadhActions.Count > 0);
-
-        // If this fails something is wrong ^^
-        // simply get the first added callback
-        if (!_mainThreadhActions.TryDequeue(out var action))
-        {
-            Debug.LogError("Something Went Wrong ! ", this);
-            yield break;
-        }
-
-        // Execute the code of the added callback
-        action?.Invoke();
+        StartCoroutine(UpdateCoroutine());
     }
 
+    private IEnumerator UpdateCoroutine()
+    {
+        while (true)
+        {
+            yield return new WaitUntil((() => _mainThreadhActions.Count > 0));
+            if (!_mainThreadhActions.TryDequeue(out var action))
+            {
+                Debug.LogError("Something Went Wrong ! ", this);
+                yield break;
+            }
+
+            action?.Invoke();
+        }
+    }
 
     async void InitSocketThread()
     {
@@ -50,13 +54,24 @@ public class InitiatlisationClient : MonoBehaviour
         {
             client = new SocketIO(requestURI);
             await client.ConnectAsync();
-            await client.EmitAsync("mjConnection","");
+            await client.EmitAsync("mjConnection", "");
+            _mainThreadhActions.Enqueue(() =>
+            {
+                SceneManager.LoadScene("InitGame");
+            });
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Test()
     {
-        
+        Debug.Log("coucou");
+    }
+
+    public void ClickConnect()
+    {
+        var input = GameObject.Find("Input").GetComponent<TMP_InputField>();
+        requestURI = "http://"+input.text+":3000";
+
+        StartConnection();
     }
 }

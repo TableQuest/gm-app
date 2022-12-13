@@ -15,11 +15,8 @@ public class CharacterListener : MonoBehaviour
 
     // Socket 
     InitiatlisationClient initClient;
-    [SerializeField] GameObject clientObject;
+    GameObject clientObject;
     SocketIO client;
-
-    // Main thread
-    private readonly ConcurrentQueue<Action> _mainThreadhActions = new ConcurrentQueue<Action>();
 
     // Prefabs
     public GameObject characterButtonPrefab;
@@ -36,6 +33,7 @@ public class CharacterListener : MonoBehaviour
     [MenuItem("MyAssets/Datas")]
     private void Start()
     {
+        clientObject = GameObject.Find("SocketIOClient");
         initClient = clientObject.GetComponent<InitiatlisationClient>();
 
         dataObject = GameObject.Find("DataContainer");
@@ -47,7 +45,6 @@ public class CharacterListener : MonoBehaviour
         var thread = new Thread(SocketThread);
         thread.Start();
 
-        StartCoroutine(myUpdate());
 
         GetAlreadyChosenCharacters();
 
@@ -57,9 +54,9 @@ public class CharacterListener : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitUntil(() => _mainThreadhActions.Count > 0);
+            yield return new WaitUntil(() => initClient._mainThreadhActions.Count > 0);
 
-            if (!_mainThreadhActions.TryDequeue(out var action))
+            if (!initClient._mainThreadhActions.TryDequeue(out var action))
             {
                 Debug.LogError("Something Went Wrong ! ", this);
                 yield break;
@@ -90,10 +87,9 @@ public class CharacterListener : MonoBehaviour
 
 
         client.On("characterSelection", (data) =>
-
         {
             System.Text.Json.JsonElement playerJson = data.GetValue(0);
-            _mainThreadhActions.Enqueue(() =>
+            initClient._mainThreadhActions.Enqueue(() =>
             {
 
                 PlayerInfo playerInfo = JsonUtility.FromJson<PlayerInfo>(playerJson.ToString());
