@@ -774,6 +774,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1308343988999399373, guid: dc95ce8fccb873a46bfa6deae71ab139, type: 3}
+      propertyPath: requestURI
+      value: ' http://localhost:3000'
+      objectReference: {fileID: 0}
     - target: {fileID: 3817780578676152248, guid: dc95ce8fccb873a46bfa6deae71ab139, type: 3}
       propertyPath: m_Name
       value: SocketIOClient
