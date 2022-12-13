@@ -35,6 +35,7 @@ public class ModifyCharacter : MonoBehaviour
         initDatas = dataObject.GetComponent<Datas>();
         listCharacter = initDatas.charactersList;
 
+
         Debug.Log(initDatas.charactersList.ToString());
         // Create a new thread in order to run the InitSocketThread method
         var thread = new Thread(SocketThread);
@@ -128,7 +129,7 @@ public class ModifyCharacter : MonoBehaviour
     private async void sendRemoveLife(Character character, TextMeshProUGUI lifeText)
     {
         character.life -= 10;
-        //lifeText.text = character.life.ToString(); ;
+        lifeText.text = character.life.ToString(); ;
         UpdateLife up = new UpdateLife() { id = character.playerId, life = character.life };
         string json = JsonUtility.ToJson(up);
         await client.EmitAsync("updateLifeCharacter", json);

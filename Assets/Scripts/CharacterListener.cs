@@ -27,6 +27,7 @@ public class CharacterListener : MonoBehaviour
 
     // Datas
     Datas initDatas;
+
     [SerializeField] GameObject dataObject;
     List<Character> listCharacter;
 
@@ -40,6 +41,7 @@ public class CharacterListener : MonoBehaviour
         dataObject = GameObject.Find("DataContainer");
         initDatas = dataObject.GetComponent<Datas>();
         listCharacter = initDatas.charactersList;
+
 
 
         var thread = new Thread(SocketThread);
@@ -86,6 +88,7 @@ public class CharacterListener : MonoBehaviour
             Thread.Sleep(300);
         }
 
+
         client.On("characterSelection", (data) =>
 
         {
@@ -123,7 +126,7 @@ public class CharacterListener : MonoBehaviour
 
     private void GetAlreadyChosenCharacters()
     {
-        HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://localhost:3000/inGameCharacters");
+        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(initClient.requestURI+"/inGameCharacters");
         HttpWebResponse response = (HttpWebResponse)request.GetResponse();
         StreamReader reader = new StreamReader(response.GetResponseStream());
 
@@ -164,9 +167,8 @@ public class CharacterListener : MonoBehaviour
 
     public void StartGame()
     {
-        
         // change state in the server
-        client.EmitAsync("switchState", "PLAYING");
+        initClient.client.EmitAsync("switchState", "PLAYING");
 
         // change the scene, here to player but to modify after
         SceneManager.LoadScene("Player");

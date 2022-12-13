@@ -7,7 +7,6 @@ using UnityEngine.Networking;
 public class Datas : MonoBehaviour
 {
     public List<Character> charactersList;
-    private const string URL = "localhost:3000";
 
     public Datas()
     {
