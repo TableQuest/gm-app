@@ -1,11 +1,8 @@
-using System.Collections;
 using UnityEngine;
 using TMPro;
 using SocketIOClient;
 using System.Threading;
-using System.Collections.Concurrent;
 using System;
-using System.Collections.Generic;
 
 public class ModifyCharacter : MonoBehaviour
 {
@@ -21,9 +18,12 @@ public class ModifyCharacter : MonoBehaviour
     public Transform scrollViewContentPlayer;
 
     // Datas
-    Datas initDatas;
+    Datas datas;
     [SerializeField] GameObject dataObject;
-    List<Character> listCharacter;
+
+
+    // Present character panel
+    private int idCharacterOnPanel;
 
     void Start()
     {
@@ -31,11 +31,11 @@ public class ModifyCharacter : MonoBehaviour
         initClient = clientObject.GetComponent<InitiatlisationClient>();
 
         dataObject = GameObject.Find("DataContainer");
-        initDatas = dataObject.GetComponent<Datas>();
-        listCharacter = initDatas.charactersList;
+        datas = dataObject.GetComponent<Datas>();
 
+        idCharacterOnPanel = -1;
 
-        Debug.Log(initDatas.charactersList.ToString());
+        Debug.Log(datas.charactersList.ToString());
         // Create a new thread in order to run the InitSocketThread method
         var thread = new Thread(SocketThread);
         // start the thread
@@ -74,11 +74,16 @@ public class ModifyCharacter : MonoBehaviour
     public void updateLifeCharacter(UpdateLife updateLife)
     {
         // r�cuperer le character dans les data
-        Character character = initDatas.charactersList.Find(c => c.playerId == updateLife.id);
+        Character character = datas.charactersList.Find(c => c.playerId == updateLife.id);
         // lui enlever de la vie
         character.life = updateLife.life;
         Debug.Log("update function: " + character.life);
-        character.panel.transform.Find("LifeValue").GetComponent<TextMeshProUGUI>().text = character.life.ToString();
+
+        // to remove because the panel is not always present 
+        if (character.id == idCharacterOnPanel)
+        {
+            character.panel.transform.Find("LifeValue").GetComponent<TextMeshProUGUI>().text = character.life.ToString();
+        }
     }
 
     public void addCharacterPanel(Character character)
@@ -115,7 +120,7 @@ public class ModifyCharacter : MonoBehaviour
 
     public void AddAllCharacterToScrollView()
     {
-        foreach(Character c in initDatas.charactersList)
+        foreach(Character c in datas.charactersList)
         {
             AddCharacterToScroolView(c);
         }
@@ -128,18 +133,11 @@ public class ModifyCharacter : MonoBehaviour
         Debug.Log(characterButton.transform.Find("TextOfButton").GetComponent<TextMeshProUGUI>().text);
         characterButton.transform.Find("TextOfButton").GetComponent<TextMeshProUGUI>().text = character.name;
 
-        characterButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate { printInfoCharacter(character); });
+        characterButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate { addCharacterPanel(character); });
 
         characterButton.transform.SetParent(scrollViewContentList);
 
     }
-
-    public void printInfoCharacter(Character character)
-    {
-        addCharacterPanel(character);
-    }
-
-
 
 }
 
