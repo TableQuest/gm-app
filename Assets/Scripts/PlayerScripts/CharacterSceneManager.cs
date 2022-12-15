@@ -3,8 +3,9 @@ using TMPro;
 using SocketIOClient;
 using System.Threading;
 using System;
+using System.Linq;
 
-public class ModifyCharacter : MonoBehaviour
+public class CharacterSceneManager : MonoBehaviour
 {
     // Socket and mainthread
     InitiatlisationClient initClient;
@@ -45,20 +46,15 @@ public class ModifyCharacter : MonoBehaviour
     }
 
 
-    private void initialisationClient()
-    {
-        client = initClient.client;
-    }
-
     void SocketThread()
     {
         while (client == null)
         {
-            initialisationClient();
+            client = initClient.client;
             Thread.Sleep(500);
         }
 
-
+        // client.on
         client.On("updateLifeCharacter", (data) =>
         {
             System.Text.Json.JsonElement playerJson = data.GetValue(0);
@@ -68,9 +64,51 @@ public class ModifyCharacter : MonoBehaviour
                 updateLifeCharacter(updateLife);
             });
         });
-        
     }
 
+    public void AddAllCharacterToScrollView()
+    {
+        Debug.Log(datas.charactersList);
+        foreach (Character c in datas.charactersList)
+        {
+            AddCharacterToScroolView(c);
+        }
+    }
+    public void AddCharacterToScroolView(Character character)
+    {
+        GameObject characterButton = Instantiate(characterButtonPrefab);
+        Debug.Log(character);
+        Debug.Log(characterButton);
+        characterButton.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = character.name;
+
+        characterButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate { PrintCharacterPanel(character); });
+
+        characterButton.transform.SetParent(scrollViewContentList);
+
+    }
+
+    public void PrintCharacterPanel(Character character)
+    {
+        // if scroll view not empty remove the panel 
+        bool panelPresence = scrollViewContentPlayer.childCount != 0;
+        if (panelPresence)
+        {
+            Destroy(scrollViewContentPlayer.GetChild(0).gameObject); 
+        } 
+        else
+        {
+            // Create the panel 
+            GameObject characterPanel = Instantiate(characterPanelPrefab);
+            characterPanel.transform.position = gameObject.transform.position;
+            characterPanel.transform.SetParent(scrollViewContentPlayer);
+
+            // set information
+            characterPanel.GetComponent<CharacterPanelManager>().SetPanelInfo(character);
+        }
+    }
+
+
+    // move to character panel manager
     public void updateLifeCharacter(UpdateLife updateLife)
     {
         // r�cuperer le character dans les data
@@ -85,29 +123,6 @@ public class ModifyCharacter : MonoBehaviour
             character.panel.transform.Find("LifeValue").GetComponent<TextMeshProUGUI>().text = character.life.ToString();
         }
     }
-
-    public void addCharacterPanel(Character character)
-    {
-        // Create the panel 
-        GameObject characterPanel = Instantiate(characterPanelPrefab);
-        characterPanel.transform.position = gameObject.transform.position;
-        characterPanel.transform.SetParent(scrollViewContentPlayer);
-
-        // Set the informations about the player 
-
-        characterPanel.transform.Find("Name").GetComponent<TextMeshProUGUI>().text=character.name;
-        TextMeshProUGUI lifeText = characterPanel.transform.Find("LifeValue").GetComponent<TextMeshProUGUI>();
-        lifeText.text =character.life.ToString();
-        characterPanel.transform.Find("LifeMax").GetComponent<TextMeshProUGUI>().text =character.lifeMax.ToString();
-        characterPanel.transform.Find("Description").GetComponent<TextMeshProUGUI>().text =character.description;
-
-        // Set the action of the button 
-        var removeLifeButton = characterPanel.transform.Find("ButtonRemoveLife").GetComponent<UnityEngine.UI.Button>() as UnityEngine.UI.Button;
-        removeLifeButton.onClick.AddListener(delegate { sendRemoveLife(character, lifeText); });
-
-        character.LinkPanel(characterPanel);
-    }
-
     private async void sendRemoveLife(Character character, TextMeshProUGUI lifeText)
     {
         character.life -= 10;
@@ -118,26 +133,7 @@ public class ModifyCharacter : MonoBehaviour
         Debug.Log("remove 10 point of life");
     }
 
-    public void AddAllCharacterToScrollView()
-    {
-        foreach(Character c in datas.charactersList)
-        {
-            AddCharacterToScroolView(c);
-        }
-    }
-    
-    public void AddCharacterToScroolView(Character character)
-    {
-        GameObject characterButton = Instantiate(characterButtonPrefab);
-        Debug.Log(character);
-        Debug.Log(characterButton.transform.Find("TextOfButton").GetComponent<TextMeshProUGUI>().text);
-        characterButton.transform.Find("TextOfButton").GetComponent<TextMeshProUGUI>().text = character.name;
 
-        characterButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate { addCharacterPanel(character); });
-
-        characterButton.transform.SetParent(scrollViewContentList);
-
-    }
 
 }
 

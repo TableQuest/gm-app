@@ -3,13 +3,11 @@ using UnityEngine;
 using TMPro;
 using SocketIOClient;
 using System.Threading;
-using System.Collections.Concurrent;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.IO;
 using UnityEngine.SceneManagement;
-using UnityEditor;
 public class CharacterListener : MonoBehaviour
 {
 
@@ -28,9 +26,6 @@ public class CharacterListener : MonoBehaviour
     [SerializeField] GameObject dataObject;
     List<Character> listCharacter;
 
-
-
-    [MenuItem("MyAssets/Datas")]
     private void Start()
     {
         clientObject = GameObject.Find("SocketIOClient");
@@ -40,14 +35,13 @@ public class CharacterListener : MonoBehaviour
         initDatas = dataObject.GetComponent<Datas>();
         listCharacter = initDatas.charactersList;
 
-
-
         var thread = new Thread(SocketThread);
         thread.Start();
 
 
         GetAlreadyChosenCharacters();
 
+        myUpdate();
     }
 
     private IEnumerator myUpdate()
@@ -65,18 +59,13 @@ public class CharacterListener : MonoBehaviour
             action?.Invoke();
         }
     }
-
-    private void initialisationClient()
-    {
-        client = initClient.client;
-    }
-
+ 
     void SocketThread()
     {
         while (client == null)
         {
 
-            initialisationClient();
+            client = initClient.client;
             Thread.Sleep(500);
         }
         while(initDatas == null)
@@ -167,7 +156,7 @@ public class CharacterListener : MonoBehaviour
         initClient.client.EmitAsync("switchState", "PLAYING");
 
         // change the scene, here to player but to modify after
-        SceneManager.LoadScene("Player");
+        SceneManager.LoadScene("Main");
     }
 
 }
