@@ -1,17 +1,12 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using TMPro;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 using System;
+
 public class CharacterPanelManager : MonoBehaviour
 {
-
-    public GameObject characterPanel;
     private Character character;
 
     // Socket and http
@@ -73,19 +68,22 @@ public class CharacterPanelManager : MonoBehaviour
 
         // client.On
 
-        // client.on mana change
-        // client.on life change
+        // client.on mana / manaMax change
+        // client.on life / lifeMax change
     }
 
     public void SetPanelInfo(Character character)
     {
         // Character Name
-        characterPanel.transform.Find("NamePanel").GetComponent<GameObject>().transform.Find("Name").GetComponent<TextMeshProUGUI>().text = name;
+        gameObject.transform.Find("NamePanel").transform.Find("Name").GetComponent<TextMeshProUGUI>().text = character.name;
 
-        GameObject basicInfoPanel = characterPanel.transform.Find("basicInfoPanel").GetComponent<GameObject>();
+        Transform basicInfoPanel = gameObject.transform.Find("BasicInfoPanel");
 
         // Life
-        InputField inputFieldLife = basicInfoPanel.transform.Find("Life").GetComponent<InputField>();
+        Debug.Log("find: " + basicInfoPanel.Find("Life"));
+        Debug.Log("inputfield: " + basicInfoPanel.Find("Life").GetComponent<TMP_InputField>());
+        TMP_InputField inputFieldLife = basicInfoPanel.Find("Life").GetComponent<TMP_InputField>();
+
         inputFieldLife.text = character.life.ToString();
         inputFieldLife.onEndEdit.AddListener(delegate {
             // TODO verify if correct value
@@ -98,7 +96,7 @@ public class CharacterPanelManager : MonoBehaviour
             });
 
         // LifeMax
-        InputField inputFieldLifeMax = basicInfoPanel.transform.Find("LifeMax").GetComponent<InputField>();
+        TMP_InputField inputFieldLifeMax = basicInfoPanel.Find("LifeMax").GetComponent<TMP_InputField>();
         inputFieldLifeMax.text = character.lifeMax.ToString();
         inputFieldLifeMax.onEndEdit.AddListener(delegate {
             // TODO verify if correct value
@@ -109,7 +107,7 @@ public class CharacterPanelManager : MonoBehaviour
         });
 
         // mana
-        InputField inputFieldMana = basicInfoPanel.transform.Find("Mana").GetComponent<InputField>();
+        TMP_InputField inputFieldMana = basicInfoPanel.Find("Mana").GetComponent<TMP_InputField>();
         inputFieldMana.text = character.mana.ToString();
         inputFieldMana.onEndEdit.AddListener(delegate {
             // TODO verify if correct value
@@ -119,8 +117,8 @@ public class CharacterPanelManager : MonoBehaviour
 
         });
 
-        // ManaMaw
-        InputField inputFieldManaMax = basicInfoPanel.transform.Find("ManaMax").GetComponent<InputField>();
+        // ManaMax
+        TMP_InputField inputFieldManaMax = basicInfoPanel.Find("ManaMax").GetComponent<TMP_InputField>();
         inputFieldManaMax.text = character.manaMax.ToString();
         inputFieldManaMax.onEndEdit.AddListener(delegate {
             // TODO verify if correct value
@@ -130,4 +128,7 @@ public class CharacterPanelManager : MonoBehaviour
 
         });
     }
+
+
+
 }

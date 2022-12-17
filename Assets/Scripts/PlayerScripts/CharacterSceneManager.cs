@@ -36,7 +36,6 @@ public class CharacterSceneManager : MonoBehaviour
 
         idCharacterOnPanel = -1;
 
-        Debug.Log(datas.charactersList.ToString());
         // Create a new thread in order to run the InitSocketThread method
         var thread = new Thread(SocketThread);
         // start the thread
@@ -68,7 +67,6 @@ public class CharacterSceneManager : MonoBehaviour
 
     public void AddAllCharacterToScrollView()
     {
-        Debug.Log(datas.charactersList);
         foreach (Character c in datas.charactersList)
         {
             AddCharacterToScroolView(c);
@@ -77,8 +75,6 @@ public class CharacterSceneManager : MonoBehaviour
     public void AddCharacterToScroolView(Character character)
     {
         GameObject characterButton = Instantiate(characterButtonPrefab);
-        Debug.Log(character);
-        Debug.Log(characterButton);
         characterButton.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = character.name;
 
         characterButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate { PrintCharacterPanel(character); });

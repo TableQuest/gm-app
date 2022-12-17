@@ -3153,9 +3153,7 @@ GameObject:
   - component: {fileID: 1924469986}
   - component: {fileID: 1924469988}
   - component: {fileID: 1924469987}
-  - component: {fileID: 1924469989}
   - component: {fileID: 1924469990}
-  - component: {fileID: 1924469991}
   - component: {fileID: 1924469992}
   m_Layer: 5
   m_Name: GlobalPanel
@@ -3229,24 +3227,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1924469985}
   m_CullTransparentMesh: 1
---- !u!114 &1924469989
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1924469985}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1119f075a040b24ba16e9e68602dc8a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  clientObject: {fileID: 3225466956684788663, guid: dc95ce8fccb873a46bfa6deae71ab139, type: 3}
-  characterPanelPrefab: {fileID: 1994106567507782348, guid: bce2f144026a3a646894eaeefbcc9c28, type: 3}
-  characterButtonPrefab: {fileID: 2121732879560711125, guid: dfd95cfe83a793846af6452877566b7d, type: 3}
-  scrollViewContentList: {fileID: 776207135}
-  scrollViewContentPlayer: {fileID: 231715299}
-  dataObject: {fileID: 6413895985548188912, guid: c1ff0a01b8e104841925148a0ce25197, type: 3}
 --- !u!114 &1924469990
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3259,19 +3239,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 609e18c2fc26dd54bab925e830c295de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1924469991
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1924469985}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 264062edc1091ff4e8eb3459df8b0d15, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterPanel: {fileID: 0}
 --- !u!114 &1924469992
 MonoBehaviour:
   m_ObjectHideFlags: 0
