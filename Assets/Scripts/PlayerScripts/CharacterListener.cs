@@ -164,7 +164,7 @@ public class CharacterListener : MonoBehaviour
     public void StartGame()
     {
         // change state in the server
-        initClient.client.EmitAsync("switchState", "PLAYING");
+        initClient.client.EmitAsync("switchState", "FREE");
 
         // change the scene, here to player but to modify after
         SceneManager.LoadScene("Main");
