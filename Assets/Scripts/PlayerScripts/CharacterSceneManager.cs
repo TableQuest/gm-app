@@ -54,15 +54,7 @@ public class CharacterSceneManager : MonoBehaviour
         }
 
         // client.on
-        client.On("updateLifeCharacter", (data) =>
-        {
-            System.Text.Json.JsonElement playerJson = data.GetValue(0);
-            initClient._mainThreadhActions.Enqueue(() =>
-            {
-                UpdateLife updateLife = JsonUtility.FromJson<UpdateLife>(data.GetValue(0).ToString());
-                updateLifeCharacter(updateLife);
-            });
-        });
+
     }
 
     public void AddAllCharacterToScrollView()
@@ -76,10 +68,10 @@ public class CharacterSceneManager : MonoBehaviour
     {
         GameObject characterButton = Instantiate(characterButtonPrefab);
         characterButton.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = character.name;
-
         characterButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate { PrintCharacterPanel(character); });
 
         characterButton.transform.SetParent(scrollViewContentList);
+        characterButton.transform.localScale = new Vector3(1, 1, 1);
 
     }
 
@@ -97,7 +89,7 @@ public class CharacterSceneManager : MonoBehaviour
             GameObject characterPanel = Instantiate(characterPanelPrefab);
             characterPanel.transform.position = gameObject.transform.position;
             characterPanel.transform.SetParent(scrollViewContentPlayer);
-
+            characterPanel.transform.localScale = new Vector3(1,1,1);
             // set information
             characterPanel.GetComponent<CharacterPanelManager>().SetPanelInfo(character);
         }

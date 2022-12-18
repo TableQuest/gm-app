@@ -93,6 +93,18 @@ public class CharacterListener : MonoBehaviour
             });
         });
 
+        client.On("updateInfoCharacter", (data) => {
+            CharacterUpdateInfo cui = JsonUtility.FromJson<CharacterUpdateInfo>(data.ToString());
+            updateInfoCharacter(cui.playerId, cui.variable, cui.value);
+            Character character = initDatas.charactersList.Find(c => c.playerId == cui.playerId);
+            Debug.Log(SceneManager.GetActiveScene().GetRootGameObjects());
+            if (SceneManager.GetActiveScene().name == "Player")
+            {
+                // change the panel
+            }
+            //if (character.id == )
+        });
+
     }
 
 
@@ -159,7 +171,56 @@ public class CharacterListener : MonoBehaviour
         SceneManager.LoadScene("Main");
     }
 
+
+    public void updateInfoCharacter(string playerId, string variable, string value)
+    {
+        Character character = initDatas.charactersList.Find(c => c.playerId == playerId);
+        switch (variable)
+        {
+            case "life":
+                try
+                {
+                    character.life = Int32.Parse(value);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log("Life value is not numerical");
+                }
+                break;
+            case "lifeMax":
+                try
+                {
+                    character.lifeMax = Int32.Parse(value);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log("LifeMax value is not numerical");
+                }
+                break;
+            case "mana":
+                try
+                {
+                    character.mana = Int32.Parse(value);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log("Mana value is not numerical");
+                }
+                break;
+            case "manaMax":
+                try
+                {
+                    character.manaMax = Int32.Parse(value);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log("ManaMax value is not numerical");
+                }
+                break;
+        }
+    }
 }
+
 
 [Serializable]
 public class PlayerInfo
@@ -172,13 +233,13 @@ public class PlayerInfo
 [Serializable]
 public class CharacterInfo
 {
-
     public int id;
     public string name;
     public int lifeMax;
     public int life;
+    public int mana;
+    public int manaMax;
     public string description;
-
 }
 
 [Serializable]
@@ -192,4 +253,19 @@ public class CharacterForHttp
 public class ListCharacter
 {  
     public List<CharacterForHttp> characterList;
+}
+
+[Serializable]
+public class CharacterUpdateInfo
+{
+    public CharacterUpdateInfo(string playerId, string variable, string value)
+    {
+        this.playerId = playerId;
+        this.variable = variable;
+        this.value = value;
+    }
+
+    public string playerId;
+    public string variable;
+    public string value;
 }
