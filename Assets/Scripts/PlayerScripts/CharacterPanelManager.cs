@@ -30,6 +30,8 @@ public class CharacterPanelManager : MonoBehaviour
 
         var thread = new Thread(SocketThread);
         thread.Start();
+
+        StartCoroutine(myUpdate());
     }
 
     private IEnumerator myUpdate()

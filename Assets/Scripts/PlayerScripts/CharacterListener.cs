@@ -102,7 +102,6 @@ public class CharacterListener : MonoBehaviour
             {
                 // change the panel
             }
-            //if (character.id == )
         });
 
     }

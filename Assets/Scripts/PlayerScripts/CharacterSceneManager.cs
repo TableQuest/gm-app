@@ -3,7 +3,7 @@ using TMPro;
 using SocketIOClient;
 using System.Threading;
 using System;
-using System.Linq;
+using System.Collections;
 
 public class CharacterSceneManager : MonoBehaviour
 {
@@ -42,6 +42,7 @@ public class CharacterSceneManager : MonoBehaviour
         thread.Start();
 
         AddAllCharacterToScrollView();
+
     }
 
 
@@ -55,6 +56,25 @@ public class CharacterSceneManager : MonoBehaviour
 
         // client.on
 
+    }
+
+    private IEnumerator myUpdate()
+    {
+        while (true)
+        {
+            // Wait until a callback action is added to the queue
+            yield return new WaitUntil(() => initClient._mainThreadhActions.Count > 0);
+            // If this fails something is wrong ^^
+            // simply get the first added callback
+            if (!initClient._mainThreadhActions.TryDequeue(out var action))
+            {
+                Debug.LogError("Something Went Wrong ! ", this);
+                yield break;
+            }
+
+            // Execute the code of the added callback
+            action?.Invoke();
+        }
     }
 
     public void AddAllCharacterToScrollView()
@@ -94,34 +114,6 @@ public class CharacterSceneManager : MonoBehaviour
             characterPanel.GetComponent<CharacterPanelManager>().SetPanelInfo(character);
         }
     }
-
-
-    // move to character panel manager
-    public void updateLifeCharacter(UpdateLife updateLife)
-    {
-        // r�cuperer le character dans les data
-        Character character = datas.charactersList.Find(c => c.playerId == updateLife.id);
-        // lui enlever de la vie
-        character.life = updateLife.life;
-        Debug.Log("update function: " + character.life);
-
-        // to remove because the panel is not always present 
-        if (character.id == idCharacterOnPanel)
-        {
-            character.panel.transform.Find("LifeValue").GetComponent<TextMeshProUGUI>().text = character.life.ToString();
-        }
-    }
-    private async void sendRemoveLife(Character character, TextMeshProUGUI lifeText)
-    {
-        character.life -= 10;
-        lifeText.text = character.life.ToString(); ;
-        UpdateLife up = new UpdateLife() { id = character.playerId, life = character.life };
-        string json = JsonUtility.ToJson(up);
-        await client.EmitAsync("updateLifeCharacter", json);
-        Debug.Log("remove 10 point of life");
-    }
-
-
 
 }
 
