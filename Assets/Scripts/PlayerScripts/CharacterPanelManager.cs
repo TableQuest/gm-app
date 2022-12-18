@@ -131,6 +131,22 @@ public class CharacterPanelManager : MonoBehaviour
             SendModificationToServer("manaMax", character.manaMax.ToString());
 
         });
+
+        // Steps
+        Debug.Log(gameObject.transform.Find("NumberSteps"));
+        Debug.Log(gameObject.transform.Find("StepPanel").Find("NumberSteps"));
+        Debug.Log(gameObject.transform.Find("StepPanel").Find("NumberSteps").GetComponent<TMP_InputField>());
+        TMP_InputField inputFieldSteps = gameObject.transform.Find("StepPanel").Find("NumberSteps").GetComponent<TMP_InputField>();
+        inputFieldSteps.text = character.speed.ToString();
+        inputFieldSteps.onEndEdit.AddListener(delegate
+        {
+            // TODO verify if correct value
+            // change data in object character
+            character.speed = Int32.Parse(inputFieldSteps.text);
+            // send to the server the changement
+            SendModificationToServer("speed", character.speed.ToString());
+
+        });
     }
 
     public void SendModificationToServer(string variable, string value)

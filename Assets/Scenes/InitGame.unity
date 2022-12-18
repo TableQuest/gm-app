@@ -810,6 +810,7 @@ GameObject:
   m_Component:
   - component: {fileID: 944505078}
   - component: {fileID: 944505079}
+  - component: {fileID: 944505080}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -834,8 +835,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.00003194809, y: 0.00013496193}
-  m_SizeDelta: {x: 0, y: 300}
+  m_AnchoredPosition: {x: -0.00003194809, y: 0.00092660915}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &944505079
 MonoBehaviour:
@@ -857,12 +858,26 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_Spacing: 5
   m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 0
+  m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &944505080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 944505077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 2
+  m_VerticalFit: 2
 --- !u!1 &988733908
 GameObject:
   m_ObjectHideFlags: 0
@@ -1101,7 +1116,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterButtonPrefab: {fileID: 2121732879560711125, guid: dfd95cfe83a793846af6452877566b7d, type: 3}
   scrollViewContent: {fileID: 944505078}
-  dataObject: {fileID: 0}
+  dataObject: {fileID: 1768303418}
 --- !u!1 &1577135602
 GameObject:
   m_ObjectHideFlags: 0
@@ -1742,3 +1757,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 94f70e63b311b9a45add8f25922013a5, type: 3}
+--- !u!1 &2434893468013170345 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2434893466814926121, guid: 94f70e63b311b9a45add8f25922013a5, type: 3}
+  m_PrefabInstance: {fileID: 2434893468013170344}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2434893468013170346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2434893468013170345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7856dfe691a489a4f896aca34f9e2c92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dataObject: {fileID: 1768303418}

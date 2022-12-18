@@ -81,6 +81,7 @@ public class CharacterSceneManager : MonoBehaviour
     {
         foreach (Character c in datas.charactersList)
         {
+
             AddCharacterToScroolView(c);
         }
     }
@@ -101,18 +102,17 @@ public class CharacterSceneManager : MonoBehaviour
         bool panelPresence = scrollViewContentPlayer.childCount != 0;
         if (panelPresence)
         {
-            Destroy(scrollViewContentPlayer.GetChild(0).gameObject); 
-        } 
-        else
-        {
-            // Create the panel 
-            GameObject characterPanel = Instantiate(characterPanelPrefab);
-            characterPanel.transform.position = gameObject.transform.position;
-            characterPanel.transform.SetParent(scrollViewContentPlayer);
-            characterPanel.transform.localScale = new Vector3(1,1,1);
-            // set information
-            characterPanel.GetComponent<CharacterPanelManager>().SetPanelInfo(character);
+            Destroy(scrollViewContentPlayer.GetChild(0).gameObject);
+            idCharacterOnPanel = -1;
         }
+        idCharacterOnPanel = character.id;
+        // Create the panel 
+        GameObject characterPanel = Instantiate(characterPanelPrefab);
+        characterPanel.transform.position = gameObject.transform.position;
+        characterPanel.transform.SetParent(scrollViewContentPlayer);
+        characterPanel.transform.localScale = new Vector3(1,1,1);
+        // set information
+        characterPanel.GetComponent<CharacterPanelManager>().SetPanelInfo(character);
     }
 
 }
