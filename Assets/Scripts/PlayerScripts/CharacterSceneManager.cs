@@ -93,14 +93,14 @@ public class CharacterSceneManager : MonoBehaviour
         characterButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate { PrintCharacterPanel(character); });
 
         // Image 
-        Sprite sprite = Resources.Load<Sprite>("Resourses/Pictures/dwarf");
+        Sprite sprite = Resources.Load<Sprite>("Images/dwarf");
         switch (character.name)
         {
             case "Dwarf":
-                sprite = Resources.Load<Sprite>("Pictures/dwarf");
+                sprite = Resources.Load<Sprite>("Images/dwarf");
                 break;
             case "Elf":
-                sprite = Resources.Load<Sprite>("Pictures/elf");
+                sprite = Resources.Load<Sprite>("Images/elf");
                 break;
         }
         Debug.Log(characterButton.transform.Find("Image").GetComponent<Image>());
