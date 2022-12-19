@@ -1,13 +1,11 @@
-using System.Collections;
-using UnityEngine;
-using TMPro;
 using SocketIOClient;
-using System.Threading;
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Net;
-using System.IO;
+using System.Threading;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+
 public class CharacterListener : MonoBehaviour
 {
 
@@ -16,17 +14,14 @@ public class CharacterListener : MonoBehaviour
     GameObject clientObject;
     SocketIO client;
 
-    // Prefabs
-    public GameObject characterButtonPrefab;
-    public Transform scrollViewContent;
 
     // Datas
     Datas initDatas;
 
     [SerializeField] GameObject dataObject;
     List<Character> listCharacter;
-
-    private void Start()
+    // Start is called before the first frame update
+    void Start()
     {
         clientObject = GameObject.Find("SocketIOClient");
         initClient = clientObject.GetComponent<InitiatlisationClient>();
@@ -37,9 +32,6 @@ public class CharacterListener : MonoBehaviour
 
         var thread = new Thread(SocketThread);
         thread.Start();
-
-
-        GetAlreadyChosenCharacters();
 
         myUpdate();
     }
@@ -59,7 +51,7 @@ public class CharacterListener : MonoBehaviour
             action?.Invoke();
         }
     }
- 
+
     void SocketThread()
     {
         while (client == null)
@@ -68,108 +60,30 @@ public class CharacterListener : MonoBehaviour
             client = initClient.client;
             Thread.Sleep(500);
         }
-        while(initDatas == null)
+        while (initDatas == null)
         {
             initDatas = dataObject.GetComponent<Datas>();
             Thread.Sleep(300);
         }
 
-
-        client.On("characterSelection", (data) =>
-        {
-            System.Text.Json.JsonElement playerJson = data.GetValue(0);
-            initClient._mainThreadhActions.Enqueue(() =>
-            {
-
-                PlayerInfo playerInfo = JsonUtility.FromJson<PlayerInfo>(playerJson.ToString());
-                CharacterInfo characterInfo = playerInfo.character;
-
-                Character character = AddCharacterToData(playerInfo, characterInfo);
-                if (character != null)
-                {
-                    AddCharacterToScroolView(character);
-                }
-
-            });
-        });
-
         client.On("updateInfoCharacter", (data) => {
-            CharacterUpdateInfo cui = JsonUtility.FromJson<CharacterUpdateInfo>(data.ToString());
+            Debug.Log("recieve updateInfo character "+ data);
+            System.Text.Json.JsonElement json = data.GetValue(0);
+            CharacterUpdateInfo cui = JsonUtility.FromJson<CharacterUpdateInfo>(json.ToString());
+            Debug.Log(cui);
             updateInfoCharacter(cui.playerId, cui.variable, cui.value);
+            Debug.Log("after data update");
             Character character = initDatas.charactersList.Find(c => c.playerId == cui.playerId);
+            Debug.Log(character.life);
             Debug.Log(SceneManager.GetActiveScene().GetRootGameObjects());
             if (SceneManager.GetActiveScene().name == "Player")
             {
-                // change the panel
+                Debug.Log("root game objects" + SceneManager.GetActiveScene().GetRootGameObjects());
+                //int printedPanel = SceneManager.GetActiveScene().Get 
             }
         });
 
     }
-
-
-
-    private bool CharacterAlreadyChosen(string idCharacter)
-    {
-        foreach(Character c in initDatas.charactersList)
-        {
-            if(c.id.ToString() == idCharacter)
-            {
-                return true;
-            } 
-        }
-        return false;
-    }
-
-    private void GetAlreadyChosenCharacters()
-    {
-        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(initClient.requestURI+"/inGameCharacters");
-        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-        StreamReader reader = new StreamReader(response.GetResponseStream());
-
-        string JsonResponse = reader.ReadToEnd();
-
-        ListCharacter CharacterList = JsonUtility.FromJson<ListCharacter>(JsonResponse);
-
-        foreach(CharacterForHttp chttp in CharacterList.characterList)
-        {
-            CharacterInfo c = chttp.characterInfo;
-            Character character = new Character(chttp.playerId,c.id, c.name, c.life, c.lifeMax, c.description);
-            initDatas.charactersList.Add(character);
-   
-            AddCharacterToScroolView(character);
-            
-        }
-    }
-
-    public Character AddCharacterToData(PlayerInfo playerInfo, CharacterInfo characterInfo)
-    {
-        if (!CharacterAlreadyChosen(characterInfo.id.ToString()))
-        {
-            Character character = new Character(playerInfo.player, characterInfo.id, characterInfo.name, characterInfo.life, characterInfo.lifeMax, characterInfo.description);
-            initDatas.charactersList.Add(character);
-
-            //addCharacterToScroolView(character);
-            return character;
-        }
-        return null;
-    }
-
-    private void AddCharacterToScroolView(Character character)
-    {
-        GameObject characterButton = Instantiate(characterButtonPrefab);
-        characterButton.transform.Find("TextOfButton").GetComponent<TextMeshProUGUI>().text = character.name;
-        characterButton.transform.SetParent(scrollViewContent);
-    }
-
-    public void StartGame()
-    {
-        // change state in the server
-        initClient.client.EmitAsync("switchState", "FREE");
-
-        // change the scene, here to player but to modify after
-        SceneManager.LoadScene("Main");
-    }
-
 
     public void updateInfoCharacter(string playerId, string variable, string value)
     {
@@ -177,13 +91,11 @@ public class CharacterListener : MonoBehaviour
         switch (variable)
         {
             case "life":
-                try
-                {
+                try{
                     character.life = Int32.Parse(value);
                 }
-                catch (Exception e)
-                {
-                    Debug.Log("Life value is not numerical");
+                catch (Exception e){
+                    Debug.Log("Life value is not numerical: "+e);
                 }
                 break;
             case "lifeMax":
@@ -193,7 +105,7 @@ public class CharacterListener : MonoBehaviour
                 }
                 catch (Exception e)
                 {
-                    Debug.Log("LifeMax value is not numerical");
+                    Debug.Log("LifeMax value is not numerical: "+e);
                 }
                 break;
             case "mana":
@@ -203,7 +115,7 @@ public class CharacterListener : MonoBehaviour
                 }
                 catch (Exception e)
                 {
-                    Debug.Log("Mana value is not numerical");
+                    Debug.Log("Mana value is not numerical: "+e);
                 }
                 break;
             case "manaMax":
@@ -213,45 +125,11 @@ public class CharacterListener : MonoBehaviour
                 }
                 catch (Exception e)
                 {
-                    Debug.Log("ManaMax value is not numerical");
+                    Debug.Log("ManaMax value is not numerical: "+e);
                 }
                 break;
         }
     }
-}
-
-
-[Serializable]
-public class PlayerInfo
-{
-    public string player;
-    public CharacterInfo character;
-}
-
-
-[Serializable]
-public class CharacterInfo
-{
-    public int id;
-    public string name;
-    public int lifeMax;
-    public int life;
-    public int mana;
-    public int manaMax;
-    public string description;
-}
-
-[Serializable]
-public class CharacterForHttp
-{
-    public string playerId;
-    public CharacterInfo characterInfo;
-}
-
-[Serializable]
-public class ListCharacter
-{  
-    public List<CharacterForHttp> characterList;
 }
 
 [Serializable]
@@ -268,3 +146,4 @@ public class CharacterUpdateInfo
     public string variable;
     public string value;
 }
+

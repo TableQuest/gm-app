@@ -4,6 +4,7 @@ using SocketIOClient;
 using System.Threading;
 using System;
 using System.Collections;
+using UnityEngine.UI;
 
 public class CharacterSceneManager : MonoBehaviour
 {
@@ -81,6 +82,7 @@ public class CharacterSceneManager : MonoBehaviour
     {
         foreach (Character c in datas.charactersList)
         {
+
             AddCharacterToScroolView(c);
         }
     }
@@ -90,9 +92,22 @@ public class CharacterSceneManager : MonoBehaviour
         characterButton.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = character.name;
         characterButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate { PrintCharacterPanel(character); });
 
+        // Image 
+        Sprite sprite = Resources.Load<Sprite>("Resourses/Pictures/dwarf");
+        switch (character.name)
+        {
+            case "Dwarf":
+                sprite = Resources.Load<Sprite>("Pictures/dwarf");
+                break;
+            case "Elf":
+                sprite = Resources.Load<Sprite>("Pictures/elf");
+                break;
+        }
+        Debug.Log(characterButton.transform.Find("Image").GetComponent<Image>());
+        characterButton.transform.Find("Image").GetComponent<Image>().sprite = sprite;
+
         characterButton.transform.SetParent(scrollViewContentList);
         characterButton.transform.localScale = new Vector3(1, 1, 1);
-
     }
 
     public void PrintCharacterPanel(Character character)
@@ -101,18 +116,17 @@ public class CharacterSceneManager : MonoBehaviour
         bool panelPresence = scrollViewContentPlayer.childCount != 0;
         if (panelPresence)
         {
-            Destroy(scrollViewContentPlayer.GetChild(0).gameObject); 
-        } 
-        else
-        {
-            // Create the panel 
-            GameObject characterPanel = Instantiate(characterPanelPrefab);
-            characterPanel.transform.position = gameObject.transform.position;
-            characterPanel.transform.SetParent(scrollViewContentPlayer);
-            characterPanel.transform.localScale = new Vector3(1,1,1);
-            // set information
-            characterPanel.GetComponent<CharacterPanelManager>().SetPanelInfo(character);
+            Destroy(scrollViewContentPlayer.GetChild(0).gameObject);
+            idCharacterOnPanel = -1;
         }
+        idCharacterOnPanel = character.id;
+        // Create the panel 
+        GameObject characterPanel = Instantiate(characterPanelPrefab);
+        characterPanel.transform.position = gameObject.transform.position;
+        characterPanel.transform.SetParent(scrollViewContentPlayer);
+        characterPanel.transform.localScale = new Vector3(1,1,1);
+        // set information
+        characterPanel.GetComponent<CharacterPanelManager>().SetPanelInfo(character);
     }
 
 }

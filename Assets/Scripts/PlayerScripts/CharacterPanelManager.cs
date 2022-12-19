@@ -3,6 +3,7 @@ using System.Collections;
 using System.Threading;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CharacterPanelManager : MonoBehaviour
 {
@@ -131,6 +132,33 @@ public class CharacterPanelManager : MonoBehaviour
             SendModificationToServer("manaMax", character.manaMax.ToString());
 
         });
+
+        // Steps
+        TMP_InputField inputFieldSteps = gameObject.transform.Find("StepPanel").Find("NumberSteps").GetComponent<TMP_InputField>();
+        inputFieldSteps.text = character.speed.ToString();
+        inputFieldSteps.onEndEdit.AddListener(delegate
+        {
+            // TODO verify if correct value
+            // change data in object character
+            character.speed = Int32.Parse(inputFieldSteps.text);
+            // send to the server the changement
+            SendModificationToServer("speed", character.speed.ToString());
+
+        });
+
+        // Image 
+        Sprite sprite = Resources.Load<Sprite>("Pictures/dwarf");
+        switch (character.name)
+        {
+            case "Dwarf":
+                sprite = Resources.Load<Sprite>("Pictures/dwarf");
+                break;
+            case "Elf":
+                sprite = Resources.Load<Sprite>("Pictures/elf");
+                break;
+        }
+        basicInfoPanel.Find("Image").GetComponent<Image>().sprite = sprite;
+
     }
 
     public void SendModificationToServer(string variable, string value)
