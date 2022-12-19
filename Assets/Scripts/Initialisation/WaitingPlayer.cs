@@ -79,21 +79,25 @@ public class WaitingPlayer : MonoBehaviour
 
         client.On("characterSelection", (data) =>
         {
-            System.Text.Json.JsonElement playerJson = data.GetValue(0);
             initClient._mainThreadhActions.Enqueue(() =>
             {
-
-                PlayerInfo playerInfo = JsonUtility.FromJson<PlayerInfo>(playerJson.ToString());
-                CharacterInfo characterInfo = playerInfo.character;
-                List<SkillInfo> skillInfos = characterInfo.skills;
-
-                Character character = AddCharacterToData(playerInfo, characterInfo, skillInfos);
-                if (character != null)
+                System.Text.Json.JsonElement playerJson = data.GetValue(0);
+                initClient._mainThreadhActions.Enqueue(() =>
                 {
-                    AddCharacterToScroolView(character);
-                }
 
+                    PlayerInfo playerInfo = JsonUtility.FromJson<PlayerInfo>(playerJson.ToString());
+                    CharacterInfo characterInfo = playerInfo.character;
+                    List<SkillInfo> skillInfos = characterInfo.skills;
+
+                    Character character = AddCharacterToData(playerInfo, characterInfo, skillInfos);
+                    if (character != null)
+                    {
+                        AddCharacterToScroolView(character);
+                    }
+
+                });
             });
+
         });
     }
 

@@ -67,20 +67,20 @@ public class CharacterListener : MonoBehaviour
         }
 
         client.On("updateInfoCharacter", (data) => {
-            Debug.Log("recieve updateInfo character "+ data);
             System.Text.Json.JsonElement json = data.GetValue(0);
-            CharacterUpdateInfo cui = JsonUtility.FromJson<CharacterUpdateInfo>(json.ToString());
-            Debug.Log(cui);
-            updateInfoCharacter(cui.playerId, cui.variable, cui.value);
-            Debug.Log("after data update");
-            Character character = initDatas.charactersList.Find(c => c.playerId == cui.playerId);
-            Debug.Log(character.life);
-            Debug.Log(SceneManager.GetActiveScene().GetRootGameObjects());
-            if (SceneManager.GetActiveScene().name == "Player")
+            initClient._mainThreadhActions.Enqueue(() =>
             {
-                Debug.Log("root game objects" + SceneManager.GetActiveScene().GetRootGameObjects());
-                //int printedPanel = SceneManager.GetActiveScene().Get 
-            }
+                CharacterUpdateInfo cui = JsonUtility.FromJson<CharacterUpdateInfo>(json.ToString());
+                updateInfoCharacter(cui.playerId, cui.variable, cui.value);
+                Character character = initDatas.charactersList.Find(c => c.playerId == cui.playerId);
+                Debug.Log(SceneManager.GetActiveScene().GetRootGameObjects());
+                if (SceneManager.GetActiveScene().name == "Player")
+                {
+                    Debug.Log("root game objects" + SceneManager.GetActiveScene().GetRootGameObjects());
+                    //int printedPanel = SceneManager.GetActiveScene().Get 
+                }
+            });
+
         });
 
     }
