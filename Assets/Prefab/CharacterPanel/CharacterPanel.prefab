@@ -504,7 +504,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 3155830938774097678}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.9999999
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1763,7 +1763,7 @@ GameObject:
   - component: {fileID: 3155830938159441740}
   - component: {fileID: 3155830938159441741}
   m_Layer: 5
-  m_Name: Text (1)
+  m_Name: EquipmentText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3393,7 +3393,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3155830939887454614}
   m_HandleRect: {fileID: 3155830939887454615}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -5172,7 +5172,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3155830939172282390}
   - component: {fileID: 3155830939172282388}
-  - component: {fileID: 3155830939172282389}
+  - component: {fileID: 5846156191578510681}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -5212,9 +5212,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_HorizontalFit: 0
+  m_HorizontalFit: 2
   m_VerticalFit: 2
---- !u!114 &3155830939172282389
+--- !u!114 &5846156191578510681
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5223,7 +5223,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3155830939172282391}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
@@ -5232,14 +5232,12 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
-  m_Spacing: 5
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
+  m_StartCorner: 0
+  m_StartAxis: 0
+  m_CellSize: {x: 250, y: 70}
+  m_Spacing: {x: 0, y: 0}
+  m_Constraint: 1
+  m_ConstraintCount: 2
 --- !u!1 &3155830939209957932
 GameObject:
   m_ObjectHideFlags: 0
@@ -6266,6 +6264,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 264062edc1091ff4e8eb3459df8b0d15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  skillPanelPrefab: {fileID: 896649438932437511, guid: a0f0f27fa10fe5c4b8d34eeabf41803b, type: 3}
 --- !u!1 &3155830939506170560
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Net;
 using System.IO;
 using UnityEngine.SceneManagement;
+using JetBrains.Annotations;
+
 public class WaitingPlayer : MonoBehaviour
 {
 
@@ -83,8 +85,9 @@ public class WaitingPlayer : MonoBehaviour
 
                 PlayerInfo playerInfo = JsonUtility.FromJson<PlayerInfo>(playerJson.ToString());
                 CharacterInfo characterInfo = playerInfo.character;
+                List<SkillInfo> skillInfos = characterInfo.skills;
 
-                Character character = AddCharacterToData(playerInfo, characterInfo);
+                Character character = AddCharacterToData(playerInfo, characterInfo, skillInfos);
                 if (character != null)
                 {
                     AddCharacterToScroolView(character);
@@ -119,25 +122,36 @@ public class WaitingPlayer : MonoBehaviour
         foreach(CharacterForHttp chttp in CharacterList.characterList)
         {
             CharacterInfo c = chttp.characterInfo;
+
+            List<Skill> skills = new List<Skill>();
+            foreach (SkillInfo s in c.skills)
+            {
+                skills.Add(new Skill(s.id, s.name, s.manaCost, s.range, s.maxTarget, s.statModifier));
+            }
+
             Character character = new Character(chttp.playerId, c.id, c.name,
                                                 c.life, c.lifeMax, c.mana, c.manaMax,
-                                                c.speed, c.description, c.skills);
+                                                c.speed, c.description, skills);
             initDatas.charactersList.Add(character);
             AddCharacterToScroolView(character);   
         }
     }
 
-    public Character AddCharacterToData(PlayerInfo playerInfo, CharacterInfo characterInfo)
+    public Character AddCharacterToData(PlayerInfo playerInfo, CharacterInfo characterInfo, List<SkillInfo> skillsInfos)
     {
         if (!CharacterAlreadyChosen(characterInfo.id.ToString()))
         {
+            List<Skill> skills = new List<Skill>();
+            foreach (SkillInfo s in skillsInfos)
+            {
+                skills.Add(new Skill(s.id,s.name,s.manaCost,s.range,s.maxTarget, s.statModifier));
+            }
+
             Character character = new Character(playerInfo.player, characterInfo.id, characterInfo.name,
                                                 characterInfo.life, characterInfo.lifeMax, characterInfo.mana, 
                                                 characterInfo.manaMax, characterInfo.speed, characterInfo.description, 
-                                                characterInfo.skills);
+                                                skills);
             initDatas.charactersList.Add(character);
-
-            //addCharacterToScroolView(character);
             return character;
         }
         return null;
@@ -181,7 +195,7 @@ public class CharacterInfo
     public int manaMax;
     public int speed;
     public string description;
-    public List<Skill> skills;
+    public List<SkillInfo> skills;
 }
 
 [Serializable]
