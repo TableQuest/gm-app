@@ -134,7 +134,7 @@ namespace Initialisation
 
                 var character = new Character(chttp.playerId, c.id, c.name,
                     c.life, c.lifeMax, c.mana, c.manaMax,
-                    c.speed, c.description, skills);
+                    c.speed, c.description, skills, c.image);
                 _initData.charactersList.Add(character);
                 AddCharacterToScroolView(character);
             }
@@ -153,7 +153,7 @@ namespace Initialisation
             Character character = new Character(playerInfo.player, characterInfo.id, characterInfo.name,
                                                 characterInfo.life, characterInfo.lifeMax, characterInfo.mana, 
                                                 characterInfo.manaMax, characterInfo.speed, characterInfo.description, 
-                                                skills);
+                                                skills, characterInfo.image);
             _initData.charactersList.Add(character);
             return character;
         }
@@ -173,7 +173,7 @@ namespace Initialisation
 
         foreach (var nhttp in npcList.npcList)
         {
-            var npc = new Npc(nhttp.id, nhttp.name, nhttp.lifeMax, nhttp.life, nhttp.description);
+            var npc = new Npc(nhttp.id, nhttp.name, nhttp.lifeMax, nhttp.life, nhttp.description, nhttp.image);
             _initData.npcList.Add(npc);
         }
     }
@@ -190,7 +190,7 @@ namespace Initialisation
 
         foreach (var nhttp in npcList.npcList)
         {
-            var npc = new Npc(nhttp.id, nhttp.name, nhttp.lifeMax, nhttp.life, nhttp.description);
+            var npc = new Npc(nhttp.id, nhttp.name, nhttp.lifeMax, nhttp.life, nhttp.description, nhttp.image);
             _initData.placedNpcList.Add(npc);
         }
     }
@@ -235,6 +235,7 @@ public class CharacterInfo
     public int speed;
     public string description;
     public List<SkillInfo> skills;
+    public string image;
 }
 
 [Serializable]
@@ -275,4 +276,5 @@ public class NpcInfo
     public int lifeMax;
     public int life;
     public string description;
+    public string image;
 }

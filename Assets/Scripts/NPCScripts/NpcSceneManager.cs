@@ -101,19 +101,10 @@ namespace NPCScripts
             npcButton.GetComponent<Button>().onClick.AddListener(delegate { PrintNpcPanel(npc); });
 
             // Image 
-            /*
-            var sprite = Resources.Load<Sprite>("Resourses/Pictures/dwarf");
-            switch (npc.name)
-            {
-                case "Dwarf":
-                    sprite = Resources.Load<Sprite>("Pictures/dwarf");
-                    break;
-                case "Elf":
-                    sprite = Resources.Load<Sprite>("Pictures/elf");
-                    break;
-            }
+            
+            var sprite = Resources.Load<Sprite>(npc.image);
             npcButton.transform.Find("Image").GetComponent<Image>().sprite = sprite;
-            */
+            
             npcButton.transform.SetParent(scrollViewContent);
             npcButton.transform.localScale = new Vector3(1, 1, 1);
         }

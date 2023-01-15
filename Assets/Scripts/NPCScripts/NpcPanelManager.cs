@@ -1,6 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Threading;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace NPCScripts
 {
@@ -72,7 +75,35 @@ namespace NPCScripts
         {
             _npcOfPanel = npc;
             
-            // TODO fill the panel chit the npc infos
+            // TODO fill the panel with the npc infos
+            
+            // Name
+            gameObject.transform.Find("NamePanel").transform.Find("Name").GetComponent<TextMeshProUGUI>().text = npc.name;
+
+            var basicInfoPanel = gameObject.transform.Find("BasicInfoPanel");
+            
+            // Life
+            var inputFieldLife = basicInfoPanel.Find("Life").GetComponent<TMP_InputField>();
+            inputFieldLife.text = npc.life.ToString();
+            inputFieldLife.onEndEdit.AddListener(delegate
+            {
+                npc.life = Int32.Parse(inputFieldLife.text);
+                SendModificationToServer("life", npc.life.ToString());
+            });
+
+            // LifeMax 
+            var inputFieldLifeMax = basicInfoPanel.Find("LifeMax").GetComponent<TMP_InputField>();
+            inputFieldLifeMax.text = npc.lifeMax.ToString();
+            inputFieldLifeMax.onEndEdit.AddListener(delegate
+            {
+                npc.lifeMax = Int32.Parse(inputFieldLife.text);
+                SendModificationToServer("lifeMax", npc.lifeMax.ToString());
+            });
+            
+            // Image
+            var sprite = Resources.Load<Sprite>(npc.image);
+            basicInfoPanel.Find("Image").GetComponent<Image>().sprite = sprite;
+
             
         }
         

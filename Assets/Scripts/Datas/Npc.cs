@@ -3,17 +3,19 @@ public class Npc
 {
     public string id;
     public string name;
-    private int lifeMax;
-    private int life;
-    private string description;
+    public int lifeMax;
+    public int life;
+    public string description;
+    public string image;
 
-    public Npc(string id, string name, int lifeMax, int life, string description)
+    public Npc(string id, string name, int lifeMax, int life, string description, string image)
     {
         this.id = id;
         this.name = name;
         this.life = life;
         this.lifeMax = lifeMax;
         this.description = description;
+        this.image = image;
     }
     
     

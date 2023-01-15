@@ -96,19 +96,8 @@ namespace PlayerScripts
             characterButton.GetComponent<UnityEngine.UI.Button>().onClick
                 .AddListener(delegate { PrintCharacterPanel(character); });
 
-            // Image 
-            var sprite = Resources.Load<Sprite>("Resourses/Pictures/dwarf");
-            switch (character.name)
-            {
-                case "Dwarf":
-                    sprite = Resources.Load<Sprite>("Pictures/dwarf");
-                    break;
-                case "Elf":
-                    sprite = Resources.Load<Sprite>("Pictures/elf");
-                    break;
-            }
-
-            Debug.Log(characterButton.transform.Find("Image").GetComponent<Image>());
+            // Image
+            var sprite = Resources.Load<Sprite>(character.image);
             characterButton.transform.Find("Image").GetComponent<Image>().sprite = sprite;
 
             characterButton.transform.SetParent(scrollViewContentList);

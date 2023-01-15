@@ -12,12 +12,13 @@ public class Character
     public int manaMax;
     public int speed;
     public string description;
+    public string image;
 
     public List<Skill> skills;
 
 
     public GameObject panel;
-    public Character(string playerId, int id, string name, int life, int lifeMax, int mana, int manaMax, int speed, string description, List<Skill> skills)
+    public Character(string playerId, int id, string name, int life, int lifeMax, int mana, int manaMax, int speed, string description, List<Skill> skills, string image)
     {
         this.playerId = playerId;
         this.id = id;
@@ -30,6 +31,7 @@ public class Character
         this.description = description;
         this.panel = null;
         this.skills = skills;
+        this.image = image;
     }
 
     public void LinkPanel(GameObject panel)
