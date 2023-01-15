@@ -3,6 +3,7 @@ using System.Collections;
 using System.Threading;
 using TMPro;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
 public class CharacterPanelManager : MonoBehaviour
@@ -14,7 +15,8 @@ public class CharacterPanelManager : MonoBehaviour
     GameObject clientObject;
 
     // Prefab
-    GameObject characterPanelPrefab;
+    [SerializeField]
+    GameObject skillPanelPrefab;
 
     // Datas
     Datas data;
@@ -147,17 +149,31 @@ public class CharacterPanelManager : MonoBehaviour
         });
 
         // Image 
-        Sprite sprite = Resources.Load<Sprite>("Pictures/dwarf");
+        Sprite sprite = Resources.Load<Sprite>("Images/dwarf");
         switch (character.name)
         {
             case "Dwarf":
-                sprite = Resources.Load<Sprite>("Pictures/dwarf");
+                sprite = Resources.Load<Sprite>("Images/dwarf");
                 break;
             case "Elf":
-                sprite = Resources.Load<Sprite>("Pictures/elf");
+                sprite = Resources.Load<Sprite>("Images/elf");
                 break;
         }
         basicInfoPanel.Find("Image").GetComponent<Image>().sprite = sprite;
+
+        Transform skillsPanel = gameObject.transform.Find("SkillsPanel");
+        Debug.Log(character.skills);
+
+        foreach (Skill s in character.skills)
+        {
+            GameObject skillPanel = Instantiate(skillPanelPrefab);
+            Debug.Log(skillsPanel.transform.Find("ScrollViewSkills"));
+            Debug.Log(skillsPanel.transform.Find("ScrollViewSkills").Find("Viewport"));
+            Debug.Log(skillsPanel.transform.Find("ScrollViewSkills").Find("Viewport").Find("Content"));
+
+            skillPanel.transform.SetParent(skillsPanel.transform.Find("ScrollViewSkills").Find("Viewport").Find("Content"));
+            setSkillPanel(s, skillPanel.transform);
+        }
 
     }
 
@@ -166,5 +182,39 @@ public class CharacterPanelManager : MonoBehaviour
         CharacterUpdateInfo cui = new(characterOfPanel.playerId, variable, value);
         string json = JsonUtility.ToJson(cui);
         client.client.EmitAsync("updateInfoCharacter", json);
+    }
+
+
+    private void setSkillPanel(Skill skill, Transform skillPanel)
+    {
+        Debug.Log(skill);
+        Debug.Log(skill.name);
+        Debug.Log(skillPanel.childCount);
+        for (int i=0; i<skillPanel.childCount; i++)
+        {
+            Debug.Log(skillPanel.GetChild(i).name);
+        }
+
+        Debug.Log(skillPanel.Find("Name"));
+        Debug.Log(skillPanel.Find("Name").GetComponent<TextMeshProUGUI>());
+
+
+        // Name
+        skillPanel.Find("Name").GetComponent<TextMeshProUGUI>().text = skill.name;
+
+        // Mana
+        TMP_InputField inputFieldMana = skillPanel.Find("Mana").GetComponent<TMP_InputField>();
+        inputFieldMana.text = skill.manaCost.ToString();
+
+        // Range
+        TMP_InputField inputFieldRange = skillPanel.Find("Range").GetComponent<TMP_InputField>();
+        inputFieldRange.text = skill.range.ToString();
+        
+        // Damage
+        TMP_InputField inputFieldDamage = skillPanel.Find("Damage").GetComponent<TMP_InputField>();
+        inputFieldDamage.text = skill.statModifier.ToString();
+
+        skillPanel.transform.localScale = new Vector3(1, 1, 1);
+
     }
 }

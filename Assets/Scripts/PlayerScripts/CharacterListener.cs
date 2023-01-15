@@ -68,16 +68,19 @@ public class CharacterListener : MonoBehaviour
 
         client.On("updateInfoCharacter", (data) => {
             System.Text.Json.JsonElement json = data.GetValue(0);
-            CharacterUpdateInfo cui = JsonUtility.FromJson<CharacterUpdateInfo>(json.ToString());
-            updateInfoCharacter(cui.playerId, cui.variable, cui.value);
-            Character character = initDatas.charactersList.Find(c => c.playerId == cui.playerId);
-            Debug.Log(SceneManager.GetActiveScene().GetRootGameObjects());
-            if (SceneManager.GetActiveScene().name == "Player")
+            initClient._mainThreadhActions.Enqueue(() =>
             {
-                // TODO
-                Debug.Log("root game objects" + SceneManager.GetActiveScene().GetRootGameObjects());
-                //int printedPanel = SceneManager.GetActiveScene().Get 
-            }
+                CharacterUpdateInfo cui = JsonUtility.FromJson<CharacterUpdateInfo>(json.ToString());
+                updateInfoCharacter(cui.playerId, cui.variable, cui.value);
+                Character character = initDatas.charactersList.Find(c => c.playerId == cui.playerId);
+                Debug.Log(SceneManager.GetActiveScene().GetRootGameObjects());
+                if (SceneManager.GetActiveScene().name == "Player")
+                {
+                    Debug.Log("root game objects" + SceneManager.GetActiveScene().GetRootGameObjects());
+                    //int printedPanel = SceneManager.GetActiveScene().Get 
+                }
+            });
+
         });
 
     }
