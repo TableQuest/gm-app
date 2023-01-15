@@ -6,134 +6,141 @@ using System;
 using System.Collections;
 using UnityEngine.UI;
 
-public class CharacterSceneManager : MonoBehaviour
+namespace PlayerScripts
 {
-    // Socket and mainthread
-    InitiatlisationClient initClient;
-    [SerializeField] GameObject clientObject;
-    SocketIO client;
-
-    // Prefabs
-    public GameObject characterPanelPrefab;
-    public GameObject characterButtonPrefab;
-    public Transform scrollViewContentList;
-    public Transform scrollViewContentPlayer;
-
-    // Datas
-    Datas datas;
-    [SerializeField] GameObject dataObject;
-
-
-    // Present character panel
-    private int idCharacterOnPanel;
-
-    void Start()
+    public class CharacterSceneManager : MonoBehaviour
     {
-        clientObject = GameObject.Find("SocketIOClient");
-        initClient = clientObject.GetComponent<InitiatlisationClient>();
+        // Socket and mainthread
+        private InitiatlisationClient _initClient;
+        [SerializeField] private GameObject clientObject;
+        private SocketIO _client;
 
-        dataObject = GameObject.Find("DataContainer");
-        datas = dataObject.GetComponent<Datas>();
+        // Prefabs
+        public GameObject characterPanelPrefab;
+        public GameObject characterButtonPrefab;
+        public Transform scrollViewContentList;
+        public Transform scrollViewContentPlayer;
 
-        idCharacterOnPanel = -1;
-
-        // Create a new thread in order to run the InitSocketThread method
-        var thread = new Thread(SocketThread);
-        // start the thread
-        thread.Start();
-
-        AddAllCharacterToScrollView();
-
-    }
+        // Datas
+        Datas _data;
+        [SerializeField] private GameObject dataObject;
 
 
-    void SocketThread()
-    {
-        while (client == null)
+        // Present character panel
+        //private int idCharacterOnPanel;
+
+        void Start()
         {
-            client = initClient.client;
-            Thread.Sleep(500);
+            clientObject = GameObject.Find("SocketIOClient");
+            _initClient = clientObject.GetComponent<InitiatlisationClient>();
+
+            dataObject = GameObject.Find("DataContainer");
+            _data = dataObject.GetComponent<Datas>();
+
+            //idCharacterOnPanel = -1;
+
+            // Create a new thread in order to run the InitSocketThread method
+            var thread = new Thread(SocketThread);
+            // start the thread
+            thread.Start();
+
+            AddAllCharacterToScrollView();
+
         }
 
-        // client.on
 
-    }
-
-    private IEnumerator myUpdate()
-    {
-        while (true)
+        private void SocketThread()
         {
-            // Wait until a callback action is added to the queue
-            yield return new WaitUntil(() => initClient._mainThreadhActions.Count > 0);
-            // If this fails something is wrong ^^
-            // simply get the first added callback
-            if (!initClient._mainThreadhActions.TryDequeue(out var action))
+            while (_client == null)
             {
-                Debug.LogError("Something Went Wrong ! ", this);
-                yield break;
+                _client = _initClient.client;
+                Thread.Sleep(500);
             }
 
-            // Execute the code of the added callback
-            action?.Invoke();
-        }
-    }
+            // client.on
 
-    public void AddAllCharacterToScrollView()
-    {
-        foreach (Character c in datas.charactersList)
+        }
+
+        private IEnumerator MyUpdate()
         {
+            while (true)
+            {
+                // Wait until a callback action is added to the queue
+                yield return new WaitUntil(() => _initClient._mainThreadhActions.Count > 0);
+                // If this fails something is wrong ^^
+                // simply get the first added callback
+                if (!_initClient._mainThreadhActions.TryDequeue(out var action))
+                {
+                    Debug.LogError("Something Went Wrong ! ", this);
+                    yield break;
+                }
 
-            AddCharacterToScroolView(c);
+                // Execute the code of the added callback
+                action?.Invoke();
+            }
         }
-    }
-    public void AddCharacterToScroolView(Character character)
-    {
-        GameObject characterButton = Instantiate(characterButtonPrefab);
-        characterButton.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = character.name;
-        characterButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate { PrintCharacterPanel(character); });
 
-        // Image 
-        Sprite sprite = Resources.Load<Sprite>("Resourses/Pictures/dwarf");
-        switch (character.name)
+        private void AddAllCharacterToScrollView()
         {
-            case "Dwarf":
-                sprite = Resources.Load<Sprite>("Pictures/dwarf");
-                break;
-            case "Elf":
-                sprite = Resources.Load<Sprite>("Pictures/elf");
-                break;
+            foreach (var c in _data.charactersList)
+            {
+
+                AddCharacterToScrollView(c);
+            }
         }
-        Debug.Log(characterButton.transform.Find("Image").GetComponent<Image>());
-        characterButton.transform.Find("Image").GetComponent<Image>().sprite = sprite;
 
-        characterButton.transform.SetParent(scrollViewContentList);
-        characterButton.transform.localScale = new Vector3(1, 1, 1);
-    }
-
-    public void PrintCharacterPanel(Character character)
-    {
-        // if scroll view not empty remove the panel 
-        bool panelPresence = scrollViewContentPlayer.childCount != 0;
-        if (panelPresence)
+        private void AddCharacterToScrollView(Character character)
         {
-            Destroy(scrollViewContentPlayer.GetChild(0).gameObject);
-            idCharacterOnPanel = -1;
+            var characterButton = Instantiate(characterButtonPrefab);
+            characterButton.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = character.name;
+            characterButton.GetComponent<UnityEngine.UI.Button>().onClick
+                .AddListener(delegate { PrintCharacterPanel(character); });
+
+            // Image 
+            var sprite = Resources.Load<Sprite>("Resourses/Pictures/dwarf");
+            switch (character.name)
+            {
+                case "Dwarf":
+                    sprite = Resources.Load<Sprite>("Pictures/dwarf");
+                    break;
+                case "Elf":
+                    sprite = Resources.Load<Sprite>("Pictures/elf");
+                    break;
+            }
+
+            Debug.Log(characterButton.transform.Find("Image").GetComponent<Image>());
+            characterButton.transform.Find("Image").GetComponent<Image>().sprite = sprite;
+
+            characterButton.transform.SetParent(scrollViewContentList);
+            characterButton.transform.localScale = new Vector3(1, 1, 1);
         }
-        idCharacterOnPanel = character.id;
-        // Create the panel 
-        GameObject characterPanel = Instantiate(characterPanelPrefab);
-        characterPanel.transform.position = gameObject.transform.position;
-        characterPanel.transform.SetParent(scrollViewContentPlayer);
-        characterPanel.transform.localScale = new Vector3(1,1,1);
-        // set information
-        characterPanel.GetComponent<CharacterPanelManager>().SetPanelInfo(character);
+
+        private void PrintCharacterPanel(Character character)
+        {
+            // if scroll view not empty remove the panel 
+            var panelPresence = scrollViewContentPlayer.childCount != 0;
+            if (panelPresence)
+            {
+                Destroy(scrollViewContentPlayer.GetChild(0).gameObject);
+                //idCharacterOnPanel = -1;
+            }
+
+            //idCharacterOnPanel = character.id;
+            // Create the panel 
+            var characterPanel = Instantiate(characterPanelPrefab);
+            characterPanel.transform.position = gameObject.transform.position;
+            characterPanel.transform.SetParent(scrollViewContentPlayer);
+            characterPanel.transform.localScale = new Vector3(1, 1, 1);
+            // set information
+            characterPanel.GetComponent<CharacterPanelManager>().SetPanelInfo(character);
+        }
+
     }
 
-}
-
-[Serializable]
-public class UpdateLife
-{
-    public string id;
-    public int life;
+    [Serializable]
+    public class UpdateLife
+    {
+        public string id;
+        public int life;
+    }
 }

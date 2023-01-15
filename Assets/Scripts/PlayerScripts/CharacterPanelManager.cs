@@ -9,7 +9,7 @@ public class CharacterPanelManager : MonoBehaviour
 {
     private Character characterOfPanel;
 
-    // Socket and http
+    // Socket
     InitiatlisationClient client;
     GameObject clientObject;
 

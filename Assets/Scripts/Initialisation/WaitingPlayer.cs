@@ -8,159 +8,201 @@ using System.Collections.Generic;
 using System.Net;
 using System.IO;
 using UnityEngine.SceneManagement;
-public class WaitingPlayer : MonoBehaviour
+
+namespace Initialisation
 {
-
-    // Socket 
-    InitiatlisationClient initClient;
-    GameObject clientObject;
-    SocketIO client;
-
-    // Prefabs
-    public GameObject characterButtonPrefab;
-    public Transform scrollViewContent;
-
-    // Datas
-    Datas initDatas;
-
-    [SerializeField] GameObject dataObject;
-    List<Character> listCharacter;
-
-    private void Start()
+    public class WaitingPlayer : MonoBehaviour
     {
-        clientObject = GameObject.Find("SocketIOClient");
-        initClient = clientObject.GetComponent<InitiatlisationClient>();
 
-        dataObject = GameObject.Find("DataContainer");
-        initDatas = dataObject.GetComponent<Datas>();
-        listCharacter = initDatas.charactersList;
+        // Socket 
+        private InitiatlisationClient _initClient;
+        private GameObject _clientObject;
+        private SocketIO _client;
 
-        var thread = new Thread(SocketThread);
-        thread.Start();
+        // Prefabs
+        public GameObject characterButtonPrefab;
+        public Transform scrollViewContent;
 
+        // Data
+        private Datas _initData;
 
-        GetAlreadyChosenCharacters();
+        [SerializeField] private GameObject dataObject;
 
-        myUpdate();
-    }
-
-    private IEnumerator myUpdate()
-    {
-        while (true)
+        private void Start()
         {
-            yield return new WaitUntil(() => initClient._mainThreadhActions.Count > 0);
+            _clientObject = GameObject.Find("SocketIOClient");
+            _initClient = _clientObject.GetComponent<InitiatlisationClient>();
 
-            if (!initClient._mainThreadhActions.TryDequeue(out var action))
+            dataObject = GameObject.Find("DataContainer");
+            _initData = dataObject.GetComponent<Datas>();
+
+            var thread = new Thread(SocketThread);
+            thread.Start();
+
+
+            GetAlreadyChosenCharacters();
+            AddAllNpcToData();
+            //AddAllPlacedNpcToData();
+            MyUpdate();
+        }
+
+        private IEnumerator MyUpdate()
+        {
+            while (true)
             {
-                Debug.LogError("Something Went Wrong ! ", this);
-                yield break;
-            }
+                yield return new WaitUntil(() => _initClient._mainThreadhActions.Count > 0);
 
-            action?.Invoke();
-        }
-    }
- 
-    void SocketThread()
-    {
-        while (client == null)
-        {
-
-            client = initClient.client;
-            Thread.Sleep(500);
-        }
-        while(initDatas == null)
-        {
-            initDatas = dataObject.GetComponent<Datas>();
-            Thread.Sleep(300);
-        }
-
-
-        client.On("characterSelection", (data) =>
-        {
-            System.Text.Json.JsonElement playerJson = data.GetValue(0);
-            initClient._mainThreadhActions.Enqueue(() =>
-            {
-
-                PlayerInfo playerInfo = JsonUtility.FromJson<PlayerInfo>(playerJson.ToString());
-                CharacterInfo characterInfo = playerInfo.character;
-
-                Character character = AddCharacterToData(playerInfo, characterInfo);
-                if (character != null)
+                if (!_initClient._mainThreadhActions.TryDequeue(out var action))
                 {
-                    AddCharacterToScroolView(character);
+                    Debug.LogError("Something Went Wrong ! ", this);
+                    yield break;
                 }
 
-            });
-        });
-    }
+                action?.Invoke();
+            }
+        }
 
-    private bool CharacterAlreadyChosen(string idCharacter)
-    {
-        foreach(Character c in initDatas.charactersList)
+        private void SocketThread()
         {
-            if(c.id.ToString() == idCharacter)
+            while (_client == null)
             {
-                return true;
-            } 
+
+                _client = _initClient.client;
+                Thread.Sleep(500);
+            }
+
+            while (_initData == null)
+            {
+                _initData = dataObject.GetComponent<Datas>();
+                Thread.Sleep(300);
+            }
+
+
+            _client.On("characterSelection", (data) =>
+            {
+                var playerJson = data.GetValue(0);
+                _initClient._mainThreadhActions.Enqueue(() =>
+                {
+
+                    var playerInfo = JsonUtility.FromJson<PlayerInfo>(playerJson.ToString());
+                    var characterInfo = playerInfo.character;
+
+                    var character = AddCharacterToData(playerInfo, characterInfo);
+                    if (character != null)
+                    {
+                        AddCharacterToScroolView(character);
+                    }
+
+                });
+            });
         }
-        return false;
-    }
 
-    private void GetAlreadyChosenCharacters()
-    {
-        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(initClient.requestURI+"/inGameCharacters");
-        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-        StreamReader reader = new StreamReader(response.GetResponseStream());
-
-        string JsonResponse = reader.ReadToEnd();
-
-        ListCharacter CharacterList = JsonUtility.FromJson<ListCharacter>(JsonResponse);
-
-        foreach(CharacterForHttp chttp in CharacterList.characterList)
+        private bool CharacterAlreadyChosen(string idCharacter)
         {
-            CharacterInfo c = chttp.characterInfo;
-            Character character = new Character(chttp.playerId, c.id, c.name,
-                                                c.life, c.lifeMax, c.mana, c.manaMax,
-                                                c.speed, c.description, c.skills);
-            initDatas.charactersList.Add(character);
-            AddCharacterToScroolView(character);   
-        }
-    }
+            foreach (var c in _initData.charactersList)
+            {
+                if (c.id.ToString() == idCharacter)
+                {
+                    return true;
+                }
+            }
 
-    public Character AddCharacterToData(PlayerInfo playerInfo, CharacterInfo characterInfo)
-    {
-        if (!CharacterAlreadyChosen(characterInfo.id.ToString()))
+            return false;
+        }
+
+        private void GetAlreadyChosenCharacters()
         {
-            Character character = new Character(playerInfo.player, characterInfo.id, characterInfo.name,
-                                                characterInfo.life, characterInfo.lifeMax, characterInfo.mana, 
-                                                characterInfo.manaMax, characterInfo.speed, characterInfo.description, 
-                                                characterInfo.skills);
-            initDatas.charactersList.Add(character);
+            var request = (HttpWebRequest)WebRequest.Create(_initClient.requestURI + "/inGameCharacters");
+            var response = (HttpWebResponse)request.GetResponse();
+            var reader = new StreamReader(response.GetResponseStream());
 
-            //addCharacterToScroolView(character);
-            return character;
+            var jsonResponse = reader.ReadToEnd();
+
+            var characterList = JsonUtility.FromJson<ListCharacter>(jsonResponse);
+
+            foreach (var chttp in characterList.characterList)
+            {
+                var c = chttp.characterInfo;
+                var character = new Character(chttp.playerId, c.id, c.name,
+                    c.life, c.lifeMax, c.mana, c.manaMax,
+                    c.speed, c.description, c.skills);
+                _initData.charactersList.Add(character);
+                AddCharacterToScroolView(character);
+            }
         }
-        return null;
+
+        private Character AddCharacterToData(PlayerInfo playerInfo, CharacterInfo characterInfo)
+        {
+            if (!CharacterAlreadyChosen(characterInfo.id.ToString()))
+            {
+                var character = new Character(playerInfo.player, characterInfo.id, characterInfo.name,
+                    characterInfo.life, characterInfo.lifeMax, characterInfo.mana,
+                    characterInfo.manaMax, characterInfo.speed, characterInfo.description,
+                    characterInfo.skills);
+                _initData.charactersList.Add(character);
+
+                //addCharacterToScroolView(character);
+                return character;
+            }
+
+            return null;
+        }
+
+
+        private void AddAllNpcToData()
+        {
+            var request = (HttpWebRequest)WebRequest.Create(_initClient.requestURI + "/npcs");
+            var response = (HttpWebResponse)request.GetResponse();
+            var reader = new StreamReader(response.GetResponseStream());
+
+            var jsonResponse = reader.ReadToEnd();
+
+            Debug.Log(jsonResponse);
+            var npcList = JsonUtility.FromJson<ListNpc>(jsonResponse);
+
+            foreach (var nhttp in npcList.npcList)
+            {
+                var npc = new Npc(nhttp.id, nhttp.name, nhttp.lifeMax, nhttp.life, nhttp.description);
+                _initData.npcList.Add(npc);
+            }
+        }
+
+        private void AddAllPlacedNpcToData()
+        {
+            var request = (HttpWebRequest)WebRequest.Create(_initClient.requestURI + "/inGameNpcs");
+            var response = (HttpWebResponse)request.GetResponse();
+            var reader = new StreamReader(response.GetResponseStream());
+
+            var jsonResponse = reader.ReadToEnd();
+
+            var npcList = JsonUtility.FromJson<ListNpc>(jsonResponse);
+
+            foreach (var nhttp in npcList.npcList)
+            {
+                var npc = new Npc(nhttp.id, nhttp.name, nhttp.lifeMax, nhttp.life, nhttp.description);
+                _initData.placedNpcList.Add(npc);
+            }
+        }
+
+        private void AddCharacterToScroolView(Character character)
+        {
+            var characterButton = Instantiate(characterButtonPrefab);
+            characterButton.transform.Find("TextOfButton").GetComponent<TextMeshProUGUI>().text = character.name;
+            characterButton.transform.SetParent(scrollViewContent);
+            characterButton.transform.localScale = new Vector3(1, 1, 1);
+        }
+
+        public void StartGame()
+        {
+            // change state in the server
+            _initClient.client.EmitAsync("switchState", "FREE");
+
+            // change the scene, here to player but to modify after
+            SceneManager.LoadScene("Main");
+        }
     }
 
-    private void AddCharacterToScroolView(Character character)
-    {
-        GameObject characterButton = Instantiate(characterButtonPrefab);
-        characterButton.transform.Find("TextOfButton").GetComponent<TextMeshProUGUI>().text = character.name;
-        characterButton.transform.SetParent(scrollViewContent);
-        characterButton.transform.localScale = new Vector3(1,1,1);
-    }
-
-    public void StartGame()
-    {
-        // change state in the server
-        initClient.client.EmitAsync("switchState", "FREE");
-
-        // change the scene, here to player but to modify after
-        SceneManager.LoadScene("Main");
-    }
 }
-
 
 [Serializable]
 public class PlayerInfo
@@ -206,4 +248,20 @@ public class SkillInfo
     public int range;
     public int maxTarget;
     public int statModifier;
+}
+
+[Serializable]
+public class ListNpc
+{
+    public List<NpcInfo> npcList;
+}
+
+[Serializable]
+public class NpcInfo
+{
+    public string id;
+    public string name;
+    public int lifeMax;
+    public int life;
+    public string description;
 }
