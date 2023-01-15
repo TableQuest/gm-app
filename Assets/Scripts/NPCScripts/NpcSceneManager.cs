@@ -128,5 +128,10 @@ namespace NPCScripts
             // set information
             npcPanel.GetComponent<NpcPanelManager>().SetInfoPanel(npc);
         }
+
+        public void TestFunction()
+        {
+            Debug.Log("Test funcction");
+        }
     }
 }

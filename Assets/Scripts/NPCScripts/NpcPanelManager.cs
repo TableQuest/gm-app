@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace NPCScripts
@@ -16,7 +18,8 @@ namespace NPCScripts
         private GameObject _clientObject;
         
         // Prefab
-        private GameObject _npcPanelPrefab;
+        [SerializeField]
+        private GameObject addNpcPanelPrefab;
 
         // Datas
         private Datas _data;
@@ -104,7 +107,31 @@ namespace NPCScripts
             var sprite = Resources.Load<Sprite>(npc.image);
             basicInfoPanel.Find("Image").GetComponent<Image>().sprite = sprite;
 
+            // Add Npc Button 
+            var addNpcButton = gameObject.transform.Find("PlacedPanel").Find("PlacedButton").GetComponent<Button>();
+            addNpcButton.onClick.AddListener(
+                delegate
+                {
+                    PrintNpcPanel();
+                }
+            );
+        }
+
+        private void PrintNpcPanel()
+        {
+            Debug.Log("Open Add Npc Panel");
+
+            var addNpcPanel = Instantiate(addNpcPanelPrefab);
+            // set value of the panel 
             
+            // add the panel on the canvas
+            var canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+            addNpcPanel.transform.position = new Vector3(480, -230, 0);
+            addNpcPanel.transform.SetParent(canvas.transform);
+            addNpcPanel.transform.localScale = new Vector3(1, 1, 1);
+
+
+
         }
         
         private void SendModificationToServer(string variable, string value)
