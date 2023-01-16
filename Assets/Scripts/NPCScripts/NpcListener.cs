@@ -3,6 +3,7 @@ using UnityEngine;
 using SocketIOClient;
 using System.Threading;
 using System.Collections;
+using System.Linq;
 
 namespace NPCScripts
 {
@@ -76,6 +77,14 @@ namespace NPCScripts
                     Debug.Log("root game objects" + SceneManager.GetActiveScene().GetRootGameObjects());
                     //int printedPanel = SceneManager.GetActiveScene().Get 
                 }*/
+            });
+            
+            _client.On("newNpc", (data) =>
+            {
+                var pawnCode  = data.GetValue().ToString();
+                _initData.placedNpcList.Last().pawnCode = pawnCode;
+                Debug.Log(_initData.placedNpcList[0].pawnCode);
+                
             });
 
         }

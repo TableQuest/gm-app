@@ -7,6 +7,7 @@ public class Npc
     public int life;
     public string description;
     public string image;
+    public string pawnCode;
 
     public Npc(string id, string name, int lifeMax, int life, string description, string image)
     {
@@ -17,6 +18,4 @@ public class Npc
         this.description = description;
         this.image = image;
     }
-    
-    
 }

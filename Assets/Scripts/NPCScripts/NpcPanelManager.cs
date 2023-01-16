@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using System.Threading;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -112,27 +114,60 @@ namespace NPCScripts
             addNpcButton.onClick.AddListener(
                 delegate
                 {
-                    PrintNpcPanel();
+                    PrintAddNpcPanel(npc);
                 }
             );
         }
 
-        private void PrintNpcPanel()
+        private void PrintAddNpcPanel(Npc npc)
         {
-            Debug.Log("Open Add Npc Panel");
+            Debug.Log("Open Add Npc Panel " +npc.id);
 
             var addNpcPanel = Instantiate(addNpcPanelPrefab);
             // set value of the panel 
             
             // add the panel on the canvas
             var canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
-            addNpcPanel.transform.position = new Vector3(480, -230, 0);
             addNpcPanel.transform.SetParent(canvas.transform);
             addNpcPanel.transform.localScale = new Vector3(1, 1, 1);
+            addNpcPanel.transform.position = new Vector3(1200, 550, 0);
+            
+            // exit button
+            addNpcPanel.transform.Find("TitlePanel").Find("ExitButton").GetComponent<Button>().onClick.AddListener(
+                delegate
+                {
+                    //
+                    Destroy(addNpcPanel);
+                    Debug.Log("remove window add npc");
+                });
 
-
-
+            // change name title
+            addNpcPanel.transform.Find("TitlePanel").Find("NpcName").GetComponent<TextMeshProUGUI>().text = npc.name;
+            
+            // change name field
+            addNpcPanel.transform.Find("NewNameField").GetComponent<TMP_InputField>().onEndEdit.AddListener(
+                delegate(string arg0)
+                {
+                    Debug.Log(arg0);
+                    Debug.Log(addNpcPanel.transform.Find("NewNameField").GetComponent<TMP_InputField>().text);
+                });
+            
+            // add npc button 
+            addNpcPanel.transform.Find("AddButton").GetComponent<Button>().onClick.AddListener(
+                delegate
+                {
+                    var newNpc = new Npc(npc.id, 
+                        addNpcPanel.transform.Find("NewNameField").GetComponent<TMP_InputField>().text
+                        , npc.lifeMax, npc.life, npc.description, npc.image);
+                    _data.placedNpcList.Add(newNpc);
+                    _client.client.EmitAsync("newNpc", newNpc.id);
+                    Destroy(addNpcPanel);
+                    
+                    GameObject.Find("Canvas").GetComponent<NpcSceneManager>().AddNpcToScrollView(newNpc, 
+                        GameObject.Find("Canvas").GetComponent<NpcSceneManager>().scrollViewContentListPlacedNpc);
+                });
         }
+        
         
         private void SendModificationToServer(string variable, string value)
         {

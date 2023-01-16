@@ -765,7 +765,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 4166326071349947321}
   - {fileID: 147177386747195619}
@@ -776,7 +776,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 250, y: -150}
   m_SizeDelta: {x: 500, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3155830939427751700
@@ -829,6 +829,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5f9f0ede3cb4618925f649f619023fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  addNpcPanelPrefab: {fileID: 3155830939427751703}
+  scrollViewContentListPlacedNpc: {fileID: 0}
 --- !u!1 &5195963327629823353
 GameObject:
   m_ObjectHideFlags: 0
@@ -1124,7 +1126,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.0019226074, y: 111.33916}
+  m_AnchoredPosition: {x: -0.001953125, y: 111.33916}
   m_SizeDelta: {x: 0.0038, y: -222.6883}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3600761142086049050

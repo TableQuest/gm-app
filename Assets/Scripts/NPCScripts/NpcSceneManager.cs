@@ -94,7 +94,7 @@ namespace NPCScripts
             }
         }
 
-        private void AddNpcToScrollView(Npc npc, Transform scrollViewContent)
+        public void AddNpcToScrollView(Npc npc, Transform scrollViewContent)
         {
             var npcButton = Instantiate(npcButtonPrefab);
             npcButton.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = npc.name;
@@ -127,11 +127,6 @@ namespace NPCScripts
             npcPanel.transform.localScale = new Vector3(1, 1, 1);
             // set information
             npcPanel.GetComponent<NpcPanelManager>().SetInfoPanel(npc);
-        }
-
-        public void TestFunction()
-        {
-            Debug.Log("Test funcction");
         }
     }
 }
