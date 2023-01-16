@@ -10,7 +10,7 @@ public class CharacterPanelManager : MonoBehaviour
 {
     private Character characterOfPanel;
 
-    // Socket and http
+    // Socket
     InitiatlisationClient client;
     GameObject clientObject;
 
@@ -149,24 +149,17 @@ public class CharacterPanelManager : MonoBehaviour
         });
 
         // Image 
-        Sprite sprite = Resources.Load<Sprite>("Images/dwarf");
-        switch (character.name)
-        {
-            case "Dwarf":
-                sprite = Resources.Load<Sprite>("Images/dwarf");
-                break;
-            case "Elf":
-                sprite = Resources.Load<Sprite>("Images/elf");
-                break;
-        }
+        Debug.Log(character.image);
+        var sprite = Resources.Load<Sprite>(character.image);
         basicInfoPanel.Find("Image").GetComponent<Image>().sprite = sprite;
 
-        Transform skillsPanel = gameObject.transform.Find("SkillsPanel");
+        // Skills
+        var skillsPanel = gameObject.transform.Find("SkillsPanel");
         Debug.Log(character.skills);
 
-        foreach (Skill s in character.skills)
+        foreach (var s in character.skills)
         {
-            GameObject skillPanel = Instantiate(skillPanelPrefab);
+            var skillPanel = Instantiate(skillPanelPrefab);
             Debug.Log(skillsPanel.transform.Find("ScrollViewSkills"));
             Debug.Log(skillsPanel.transform.Find("ScrollViewSkills").Find("Viewport"));
             Debug.Log(skillsPanel.transform.Find("ScrollViewSkills").Find("Viewport").Find("Content"));
@@ -177,7 +170,7 @@ public class CharacterPanelManager : MonoBehaviour
 
     }
 
-    public void SendModificationToServer(string variable, string value)
+    private void SendModificationToServer(string variable, string value)
     {
         CharacterUpdateInfo cui = new(characterOfPanel.playerId, variable, value);
         string json = JsonUtility.ToJson(cui);
