@@ -71,9 +71,6 @@ namespace NPCScripts
                 _data = _dataObject.GetComponent<Datas>();
                 Thread.Sleep(300);
             }
-
-            // client.On
-
         }
 
         public void SetInfoPanel(Npc npc)
@@ -145,13 +142,14 @@ namespace NPCScripts
             addNpcPanel.transform.Find("TitlePanel").Find("NpcName").GetComponent<TextMeshProUGUI>().text = npc.name;
             
             // change name field
+            /*
             addNpcPanel.transform.Find("NewNameField").GetComponent<TMP_InputField>().onEndEdit.AddListener(
                 delegate(string arg0)
                 {
                     Debug.Log(arg0);
                     Debug.Log(addNpcPanel.transform.Find("NewNameField").GetComponent<TMP_InputField>().text);
                 });
-            
+            */
             // add npc button 
             addNpcPanel.transform.Find("AddButton").GetComponent<Button>().onClick.AddListener(
                 delegate

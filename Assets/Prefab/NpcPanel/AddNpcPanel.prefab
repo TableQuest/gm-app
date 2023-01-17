@@ -830,7 +830,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   addNpcPanelPrefab: {fileID: 3155830939427751703}
-  scrollViewContentListPlacedNpc: {fileID: 0}
 --- !u!1 &5195963327629823353
 GameObject:
   m_ObjectHideFlags: 0
@@ -1339,7 +1338,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 107.8, y: 14.1622}
+  m_AnchoredPosition: {x: 107.799805, y: 14.1622}
   m_SizeDelta: {x: 237.8198, y: 46.6757}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8411972213907172424

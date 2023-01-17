@@ -1,4 +1,6 @@
 ﻿using System;
+
+
 public class Npc
 {
     public string id;
@@ -19,3 +21,4 @@ public class Npc
         this.image = image;
     }
 }
+
