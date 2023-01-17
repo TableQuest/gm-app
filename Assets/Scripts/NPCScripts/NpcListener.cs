@@ -61,16 +61,13 @@ namespace NPCScripts
 
             _client.On("updateInfoNpc", (data) =>
             {
-                Debug.Log("updateInfoNpc");
                 var json = data.GetValue(0);
-                Debug.Log(json);
                 _initClient._mainThreadhActions.Enqueue(() =>
                 {
                     var nui = JsonUtility.FromJson<NpcUpdateInfo>(json.ToString());
                     UpdateInfoNpc(nui.pawnCode, nui.variable, nui.value);
                     var npc = _initData.placedNpcList.Find(c => c.pawnCode== nui.pawnCode);     
-                    Debug.Log(npc);
-                    Debug.Log(_initData.placedNpcList);
+                    Debug.Log("Udpate inf npc " + npc.name);
                     //GameObject.Find("Canvas").GetComponent<NpcSceneManager>().PrintNpcPanel(npc);
                 });
             });
@@ -78,14 +75,8 @@ namespace NPCScripts
             _client.On("newNpc", (data) =>
             {
                 var pawnCode = data.GetValue().ToString();
-                Debug.Log("newNpc "+pawnCode);
-                Debug.Log(_initData.placedNpcList);
-                Debug.Log(_initData.placedNpcList[^1]);
-                Debug.Log(_initData.placedNpcList[^1].pawnCode);
                 _initData.placedNpcList[^1].pawnCode = pawnCode;
-                Debug.Log("here");
-                Debug.Log(_initData.placedNpcList[^1].pawnCode);
-                
+                Debug.Log("Set pawncode "+pawnCode+" to last npc");
             });
 
         }
