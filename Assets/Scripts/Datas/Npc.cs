@@ -19,6 +19,7 @@ public class Npc
         this.lifeMax = lifeMax;
         this.description = description;
         this.image = image;
+        this.pawnCode = null;
     }
 }
 

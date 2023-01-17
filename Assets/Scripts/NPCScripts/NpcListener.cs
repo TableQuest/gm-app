@@ -3,7 +3,6 @@ using UnityEngine;
 using SocketIOClient;
 using System.Threading;
 using System.Collections;
-using System.Linq;
 
 namespace NPCScripts
 {
@@ -78,10 +77,14 @@ namespace NPCScripts
             
             _client.On("newNpc", (data) =>
             {
-                Debug.Log("newNpc");
                 var pawnCode = data.GetValue().ToString();
-                _initData.placedNpcList[_initData.placedNpcList.Count].pawnCode = pawnCode;
-                Debug.Log(_initData.placedNpcList[0].pawnCode);
+                Debug.Log("newNpc "+pawnCode);
+                Debug.Log(_initData.placedNpcList);
+                Debug.Log(_initData.placedNpcList[^1]);
+                Debug.Log(_initData.placedNpcList[^1].pawnCode);
+                _initData.placedNpcList[^1].pawnCode = pawnCode;
+                Debug.Log("here");
+                Debug.Log(_initData.placedNpcList[^1].pawnCode);
                 
             });
 

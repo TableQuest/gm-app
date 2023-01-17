@@ -169,7 +169,7 @@ namespace NPCScripts
         
         private void SendModificationToServer(string variable, string value)
         {
-            NpcUpdateInfo cui = new(_npcOfPanel.id, variable, value);
+            NpcUpdateInfo cui = new(_npcOfPanel.pawnCode, variable, value);
             var json = JsonUtility.ToJson(cui);
             _client.client.EmitAsync("updateInfoNpc", json);
         }
