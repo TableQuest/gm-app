@@ -104,7 +104,7 @@ namespace PlayerScripts
             characterButton.transform.localScale = new Vector3(1, 1, 1);
         }
 
-        private void PrintCharacterPanel(Character character)
+        public void PrintCharacterPanel(Character character)
         {
             // if scroll view not empty remove the panel 
             var panelPresence = scrollViewContentPlayer.childCount != 0;

@@ -71,9 +71,6 @@ namespace NPCScripts
                 _data = _dataObject.GetComponent<Datas>();
                 Thread.Sleep(300);
             }
-
-            // client.On
-
         }
 
         public void SetInfoPanel(Npc npc)
@@ -121,8 +118,6 @@ namespace NPCScripts
 
         private void PrintAddNpcPanel(Npc npc)
         {
-            Debug.Log("Open Add Npc Panel " +npc.id);
-
             var addNpcPanel = Instantiate(addNpcPanelPrefab);
             // set value of the panel 
             
@@ -136,44 +131,47 @@ namespace NPCScripts
             addNpcPanel.transform.Find("TitlePanel").Find("ExitButton").GetComponent<Button>().onClick.AddListener(
                 delegate
                 {
-                    //
                     Destroy(addNpcPanel);
-                    Debug.Log("remove window add npc");
                 });
 
             // change name title
             addNpcPanel.transform.Find("TitlePanel").Find("NpcName").GetComponent<TextMeshProUGUI>().text = npc.name;
             
-            // change name field
-            addNpcPanel.transform.Find("NewNameField").GetComponent<TMP_InputField>().onEndEdit.AddListener(
-                delegate(string arg0)
-                {
-                    Debug.Log(arg0);
-                    Debug.Log(addNpcPanel.transform.Find("NewNameField").GetComponent<TMP_InputField>().text);
-                });
-            
             // add npc button 
             addNpcPanel.transform.Find("AddButton").GetComponent<Button>().onClick.AddListener(
                 delegate
                 {
-                    var newNpc = new Npc(npc.id, 
-                        addNpcPanel.transform.Find("NewNameField").GetComponent<TMP_InputField>().text
-                        , npc.lifeMax, npc.life, npc.description, npc.image);
+                    var name = addNpcPanel.transform.Find("NewNameField").GetComponent<TMP_InputField>().text;
+                    var newNpc = new Npc(npc.id, name, npc.lifeMax, npc.life, npc.description, npc.image);
                     _data.placedNpcList.Add(newNpc);
-                    _client.client.EmitAsync("newNpc", newNpc.id);
+                    var objJson = new NewNpc(newNpc.id, newNpc.name);
+                    _client.client.EmitAsync("newNpc", JsonUtility.ToJson(objJson));
                     Destroy(addNpcPanel);
-                    
                     GameObject.Find("Canvas").GetComponent<NpcSceneManager>().AddNpcToScrollView(newNpc, 
                         GameObject.Find("Canvas").GetComponent<NpcSceneManager>().scrollViewContentListPlacedNpc);
+                    Debug.Log("Add Npc of id "+newNpc.id + " named "+newNpc.name);
                 });
         }
         
         
         private void SendModificationToServer(string variable, string value)
         {
-            NpcUpdateInfo cui = new(_npcOfPanel.id, variable, value);
+            NpcUpdateInfo cui = new(_npcOfPanel.pawnCode, variable, value);
             var json = JsonUtility.ToJson(cui);
             _client.client.EmitAsync("updateInfoNpc", json);
         }
+    }
+}
+
+[Serializable]
+public class NewNpc
+{
+    public string id;
+    public string name;
+
+    public NewNpc(string id, string name)
+    {
+        this.id = id;
+        this.name = name;
     }
 }

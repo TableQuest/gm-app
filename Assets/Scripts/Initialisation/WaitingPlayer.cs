@@ -5,8 +5,7 @@ using SocketIOClient;
 using System.Threading;
 using System;
 using System.Collections.Generic;
-using System.Net;
-using System.IO;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
 namespace Initialisation
@@ -39,11 +38,11 @@ namespace Initialisation
             var thread = new Thread(SocketThread);
             thread.Start();
 
+            StartCoroutine(GetAllPlacedNpc());
+            StartCoroutine(GetAllNpc());
+            StartCoroutine(GetTestAlreadyChosenCharacters());
+            StartCoroutine(MyUpdate());
 
-            GetAlreadyChosenCharacters();
-            AddAllNpcToData();
-            //AddAllPlacedNpcToData();
-            MyUpdate();
         }
 
         private IEnumerator MyUpdate()
@@ -112,35 +111,38 @@ namespace Initialisation
             return false;
         }
 
-        private void GetAlreadyChosenCharacters()
-        {
-            var request = (HttpWebRequest)WebRequest.Create(_initClient.requestURI + "/inGameCharacters");
-            var response = (HttpWebResponse)request.GetResponse();
-            var reader = new StreamReader(response.GetResponseStream());
+        IEnumerator GetTestAlreadyChosenCharacters() {
+            UnityWebRequest www = UnityWebRequest.Get(_initClient.requestURI+"/inGameCharacters");
+        
+            yield return www.SendWebRequest();
+ 
+            if (www.result != UnityWebRequest.Result.Success) {
+                Debug.Log(www.error);
+            }
+            else {
+                // Show results as text
+                var jsonResponse = www.downloadHandler.text;
+                var characterList = JsonUtility.FromJson<ListCharacter>(jsonResponse);
 
-            var jsonResponse = reader.ReadToEnd();
-
-            var characterList = JsonUtility.FromJson<ListCharacter>(jsonResponse);
-
-            foreach (var chttp in characterList.characterList)
-            {
-                var c = chttp.characterInfo;
-
-                List<Skill> skills = new List<Skill>();
-                foreach (SkillInfo s in c.skills)
+                foreach (var chttp in characterList.characterList)
                 {
-                    skills.Add(new Skill(s.id, s.name, s.manaCost, s.range, s.maxTarget, s.statModifier));
-                }
+                    var c = chttp.characterInfo;
 
-                var character = new Character(chttp.playerId, c.id, c.name,
-                    c.life, c.lifeMax, c.mana, c.manaMax,
-                    c.speed, c.description, skills, c.image);
-                _initData.charactersList.Add(character);
-                AddCharacterToScroolView(character);
+                    List<Skill> skills = new List<Skill>();
+                    foreach (SkillInfo s in c.skills)
+                    {
+                        skills.Add(new Skill(s.id, s.name, s.manaCost, s.range, s.maxTarget, s.statModifier));
+                    }
+
+                    var character = new Character(chttp.playerId, c.id, c.name,
+                        c.life, c.lifeMax, c.mana, c.manaMax,
+                        c.speed, c.description, skills, c.image);
+                    _initData.charactersList.Add(character);
+                    AddCharacterToScroolView(character);
+                }
             }
         }
-
-    public Character AddCharacterToData(PlayerInfo playerInfo, CharacterInfo characterInfo, List<SkillInfo> skillsInfos)
+        public Character AddCharacterToData(PlayerInfo playerInfo, CharacterInfo characterInfo, List<SkillInfo> skillsInfos)
     {
         if (!CharacterAlreadyChosen(characterInfo.id.ToString()))
         {
@@ -159,58 +161,64 @@ namespace Initialisation
         }
         return null;
     }
+        IEnumerator GetAllNpc() {
+            UnityWebRequest www = UnityWebRequest.Get(_initClient.requestURI+"/npcs");
+        
+            yield return www.SendWebRequest();
+ 
+            if (www.result != UnityWebRequest.Result.Success) {
+                Debug.Log(www.error);
+            }
+            else {
+                // Show results as text
+                var jsonResponse = www.downloadHandler.text;
+                var npcList = JsonUtility.FromJson<ListNpc>(jsonResponse);
 
-    private void AddAllNpcToData()
-    {
-        var request = (HttpWebRequest)WebRequest.Create(_initClient.requestURI + "/npcs");
-        var response = (HttpWebResponse)request.GetResponse();
-        var reader = new StreamReader(response.GetResponseStream());
-
-        var jsonResponse = reader.ReadToEnd();
-
-        Debug.Log(jsonResponse);
-        var npcList = JsonUtility.FromJson<ListNpc>(jsonResponse);
-
-        foreach (var nhttp in npcList.npcList)
-        {
-            var npc = new Npc(nhttp.id, nhttp.name, nhttp.lifeMax, nhttp.life, nhttp.description, nhttp.image);
-            _initData.npcList.Add(npc);
+                foreach (var nhttp in npcList.npcList)
+                {
+                    var npc = new Npc(nhttp.id, nhttp.name, nhttp.lifeMax, nhttp.life, nhttp.description, nhttp.image);
+                    _initData.npcList.Add(npc);
+                }
+            }
         }
-    }
+    
+        IEnumerator GetAllPlacedNpc() {
+            UnityWebRequest www = UnityWebRequest.Get(_initClient.requestURI+"/inGameNpcs");
+            
+            yield return www.SendWebRequest();
+     
+            if (www.result != UnityWebRequest.Result.Success) {
+                Debug.Log(www.error);
+            }
+            else {
+                // Show results as text
+                var jsonResponse = www.downloadHandler.text;
+                var npcList = JsonUtility.FromJson<ListNpc>(jsonResponse);
 
-    private void AddAllPlacedNpcToData()
-    {
-        var request = (HttpWebRequest)WebRequest.Create(_initClient.requestURI + "/inGameNpcs");
-        var response = (HttpWebResponse)request.GetResponse();
-        var reader = new StreamReader(response.GetResponseStream());
-
-        var jsonResponse = reader.ReadToEnd();
-
-        var npcList = JsonUtility.FromJson<ListNpc>(jsonResponse);
-
-        foreach (var nhttp in npcList.npcList)
-        {
-            var npc = new Npc(nhttp.id, nhttp.name, nhttp.lifeMax, nhttp.life, nhttp.description, nhttp.image);
-            _initData.placedNpcList.Add(npc);
+                foreach (var nhttp in npcList.npcList)
+                {
+                    var npc = new Npc(nhttp.id, nhttp.name, nhttp.lifeMax, nhttp.life, nhttp.description, nhttp.image);
+                    _initData.placedNpcList.Add(npc);
+                }
+            }
         }
-    }
 
-    private void AddCharacterToScroolView(Character character)
-    {
-        var characterButton = Instantiate(characterButtonPrefab);
-        characterButton.transform.Find("TextOfButton").GetComponent<TextMeshProUGUI>().text = character.name;
-        characterButton.transform.SetParent(scrollViewContent);
-        characterButton.transform.localScale = new Vector3(1, 1, 1);
-    }
+        private void AddCharacterToScroolView(Character character)
+        {
+            var characterButton = Instantiate(characterButtonPrefab);
+            characterButton.transform.Find("TextOfButton").GetComponent<TextMeshProUGUI>().text = character.name;
+            characterButton.transform.SetParent(scrollViewContent);
+            characterButton.transform.localScale = new Vector3(1, 1, 1);
+        }
 
-    public void StartGame()
-    {
-        // change state in the server
-        _initClient.client.EmitAsync("switchState", "FREE");
+        public void StartGame()
+        {
+            // change state in the server
+            _initClient.client.EmitAsync("switchState", "FREE");
 
-        // change the scene, here to player but to modify after
-        SceneManager.LoadScene("Main");
-    }
+            // change the scene, here to player but to modify after
+            SceneManager.LoadScene("Main");
+        }
     }
 
 }

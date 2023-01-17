@@ -1,4 +1,6 @@
 ﻿using System;
+
+
 public class Npc
 {
     public string id;
@@ -17,5 +19,7 @@ public class Npc
         this.lifeMax = lifeMax;
         this.description = description;
         this.image = image;
+        this.pawnCode = null;
     }
 }
+

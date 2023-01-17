@@ -3,7 +3,6 @@ using UnityEngine;
 using SocketIOClient;
 using System.Threading;
 using System.Collections;
-using System.Linq;
 
 namespace NPCScripts
 {
@@ -14,15 +13,14 @@ namespace NPCScripts
         private SocketIO _client;
 
         private Datas _initData;
-        private GameObject _dataObject;
+        [SerializeField] GameObject dataObject;
 
         private void Start()
         {
             _clientObject = GameObject.Find("SocketIOClient");
             _initClient = _clientObject.GetComponent<InitiatlisationClient>();
 
-            _dataObject = GameObject.Find("DataContainer");
-            _initData = _dataObject.GetComponent<Datas>();
+            _initData = dataObject.GetComponent<Datas>();
 
             var thread = new Thread(SocketThread);
             thread.Start();
@@ -57,57 +55,59 @@ namespace NPCScripts
 
             while (_initData == null)
             {
-                _initData = _dataObject.GetComponent<Datas>();
+                _initData = dataObject.GetComponent<Datas>();
                 Thread.Sleep(300);
             }
 
-            _client.On("updateInfoNPC", (data) =>
+            _client.On("updateInfoNpc", (data) =>
             {
                 var json = data.GetValue(0);
-                var nui = JsonUtility.FromJson<NpcUpdateInfo>(json.ToString());
-                UpdateInfoNpc(nui.npcId, nui.variable, nui.value);
-                var npc = _initData.npcList.Find(c => c.id== nui.npcId);
-                
-                // TODO maj when the scene is the npc scene
-                /*
-                Debug.Log(SceneManager.GetActiveScene().GetRootGameObjects());
-                if (SceneManager.GetActiveScene().name == "Player")
+                _initClient._mainThreadhActions.Enqueue(() =>
                 {
-                    
-                    Debug.Log("root game objects" + SceneManager.GetActiveScene().GetRootGameObjects());
-                    //int printedPanel = SceneManager.GetActiveScene().Get 
-                }*/
+                    var nui = JsonUtility.FromJson<NpcUpdateInfo>(json.ToString());
+                    UpdateInfoNpc(nui.pawnCode, nui.variable, nui.value);
+                    var npc = _initData.placedNpcList.Find(c => c.pawnCode== nui.pawnCode);     
+                    Debug.Log("Udpate inf npc " + npc.name);
+                    //GameObject.Find("Canvas").GetComponent<NpcSceneManager>().PrintNpcPanel(npc);
+                });
             });
             
             _client.On("newNpc", (data) =>
             {
-                var pawnCode  = data.GetValue().ToString();
-                _initData.placedNpcList.Last().pawnCode = pawnCode;
-                Debug.Log(_initData.placedNpcList[0].pawnCode);
-                
+                var pawnCode = data.GetValue().ToString();
+                _initData.placedNpcList[^1].pawnCode = pawnCode;
+                Debug.Log("Set pawncode "+pawnCode+" to last npc");
             });
 
         }
 
-        private void UpdateInfoNpc(string npcId, string variable, string value)
+        private void UpdateInfoNpc(string pawnCode, string variable, string value)
         {
-            var character = _initData.npcList.Find(c => c.id == npcId);
-            /*
+            var npc = _initData.placedNpcList.Find(c => c.pawnCode == pawnCode);
+
             switch (variable)
             {
-                
                 case "life":
                     try
                     {
-                        character.life = Int32.Parse(value);
+                        npc.life = int.Parse(value);
                     }
                     catch (Exception e)
                     {
                         Debug.Log("Life value is not numerical: " + e);
                     }
-
                     break;
-            }*/
+                case "lifeMax":
+                    try
+                    {
+                        npc.lifeMax = Int32.Parse(value);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Log("LifeMax value is not numerical: " + e);
+                    }
+                    break;
+            }
         }
     }
 }
@@ -115,13 +115,13 @@ namespace NPCScripts
 [Serializable]
 public class NpcUpdateInfo
 {
-    public string npcId;
+    public string pawnCode;
     public string variable;
     public string value;
     
-    public NpcUpdateInfo(string npcId, string variable, string value)
+    public NpcUpdateInfo(string pawnCode, string variable, string value)
     {
-        this.npcId = npcId;
+        this.pawnCode = pawnCode;
         this.value = value;
         this.variable = variable;
     }
