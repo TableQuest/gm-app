@@ -142,7 +142,7 @@ namespace NPCScripts
                 delegate
                 {
                     var name = addNpcPanel.transform.Find("NewNameField").GetComponent<TMP_InputField>().text;
-                    var newNpc = new Npc(npc.id, name, npc.lifeMax, npc.life, npc.description, npc.image);
+                    var newNpc = new Npc(npc.id, name, npc.lifeMax, npc.life, npc.description, npc.image, npc.skills);
                     _data.placedNpcList.Add(newNpc);
                     var objJson = new NewNpc(newNpc.id, newNpc.name);
                     _client.client.EmitAsync("newNpc", JsonUtility.ToJson(objJson));
