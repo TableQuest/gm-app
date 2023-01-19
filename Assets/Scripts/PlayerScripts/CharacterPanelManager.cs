@@ -29,8 +29,7 @@ public class CharacterPanelManager : MonoBehaviour
 
         dataObject = GameObject.Find("DataContainer");
         data = dataObject.GetComponent<Datas>();
-
-
+        
         var thread = new Thread(SocketThread);
         thread.Start();
 

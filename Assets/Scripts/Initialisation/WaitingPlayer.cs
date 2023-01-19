@@ -123,7 +123,8 @@ namespace Initialisation
                 // Show results as text
                 var jsonResponse = www.downloadHandler.text;
                 var characterList = JsonUtility.FromJson<ListCharacter>(jsonResponse);
-
+                Debug.Log(jsonResponse);
+                
                 foreach (var chttp in characterList.characterList)
                 {
                     var c = chttp.characterInfo;
@@ -212,6 +213,7 @@ namespace Initialisation
                     }
                     
                     var npc = new Npc(nhttp.id, nhttp.name, nhttp.lifeMax, nhttp.life, nhttp.description, nhttp.image, skills);
+                    npc.pawnCode = nhttp.pawnCode;
                     _initData.placedNpcList.Add(npc);
                 }
             }
@@ -285,6 +287,19 @@ public class SkillInfo
     public int statModifier;
     public bool healing;
     public string image;
+
+    public SkillInfo(int id, string name, int manaCost, int range, int maxTarget, string type, int statModifier, bool healing, string image)
+    {
+        this.id = id;
+        this.name = name;
+        this.manaCost = manaCost;
+        this.range = range;
+        this.maxTarget = maxTarget;
+        this.type = type;
+        this.statModifier = statModifier;
+        this.healing = healing;
+        this.image = image;
+    }
 }
 
 [Serializable]
@@ -302,5 +317,6 @@ public class NpcInfo
     public int life;
     public string description;
     public string image;
+    public string pawnCode;
     public List<SkillInfo> skills;
 }

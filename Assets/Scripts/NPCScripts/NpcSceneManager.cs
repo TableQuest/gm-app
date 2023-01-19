@@ -82,7 +82,7 @@ namespace NPCScripts
         {
             foreach (var n in _data.npcList)
             {
-                AddNpcToScrollView(n, scrollViewContentListNpc);
+                AddNpcToScrollView(n, scrollViewContentListNpc, false);
             }
         }
 
@@ -90,15 +90,16 @@ namespace NPCScripts
         {
             foreach (var npc in _data.placedNpcList)
             {
-                AddNpcToScrollView(npc, scrollViewContentListPlacedNpc) ;
+                AddNpcToScrollView(npc, scrollViewContentListPlacedNpc, true) ;
+                Debug.Log(_data.placedNpcList);
             }
         }
 
-        public void AddNpcToScrollView(Npc npc, Transform scrollViewContent)
+        public void AddNpcToScrollView(Npc npc, Transform scrollViewContent, bool placed)
         {
             var npcButton = Instantiate(npcButtonPrefab);
             npcButton.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = npc.name;
-            npcButton.GetComponent<Button>().onClick.AddListener(delegate { PrintNpcPanel(npc); });
+            npcButton.GetComponent<Button>().onClick.AddListener(delegate { PrintNpcPanel(npc, placed); });
 
             // Image 
             
@@ -109,7 +110,7 @@ namespace NPCScripts
             npcButton.transform.localScale = new Vector3(1, 1, 1);
         }
 
-        public void PrintNpcPanel(Npc npc)
+        public void PrintNpcPanel(Npc npc, bool placed)
         {
             // if scroll view not empty remove the panel 
             var panelPresence = scrollViewContentNpc.childCount != 0;
@@ -126,7 +127,7 @@ namespace NPCScripts
             npcPanel.transform.SetParent(scrollViewContentNpc);
             npcPanel.transform.localScale = new Vector3(1, 1, 1);
             // set information
-            npcPanel.GetComponent<NpcPanelManager>().SetInfoPanel(npc);
+            npcPanel.GetComponent<NpcPanelManager>().SetInfoPanel(npc, placed);
         }
     }
 }

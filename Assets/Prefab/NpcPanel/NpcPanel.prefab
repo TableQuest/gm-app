@@ -3677,7 +3677,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_HorizontalFit: 0
+  m_HorizontalFit: 2
   m_VerticalFit: 2
 --- !u!114 &3155830939172282389
 MonoBehaviour:
@@ -3699,7 +3699,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_Spacing: 5
   m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 0
+  m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
@@ -3973,6 +3973,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   addNpcPanelPrefab: {fileID: 3155830939427751703, guid: 35395165e59c2a047b09a39233ea12dc, type: 3}
+  scrollViewContentSkills: {fileID: 3155830939172282391}
+  skillPanelPrefab: {fileID: 7102207182790863553, guid: 609ed32ef0a4e7f4086f676cdcd6a82a, type: 3}
+  attackPanelPrefab: {fileID: 3155830939427751703, guid: 305ea0e1d4daead4aa3ea577c715c0de, type: 3}
 --- !u!1 &3155830939554955799
 GameObject:
   m_ObjectHideFlags: 0
