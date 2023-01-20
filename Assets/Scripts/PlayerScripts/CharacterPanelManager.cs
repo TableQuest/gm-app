@@ -148,20 +148,15 @@ public class CharacterPanelManager : MonoBehaviour
         });
 
         // Image 
-        Debug.Log(character.image);
         var sprite = Resources.Load<Sprite>(character.image);
         basicInfoPanel.Find("Image").GetComponent<Image>().sprite = sprite;
 
         // Skills
         var skillsPanel = gameObject.transform.Find("SkillsPanel");
-        Debug.Log(character.skills);
 
         foreach (var s in character.skills)
         {
             var skillPanel = Instantiate(skillPanelPrefab);
-            Debug.Log(skillsPanel.transform.Find("ScrollViewSkills"));
-            Debug.Log(skillsPanel.transform.Find("ScrollViewSkills").Find("Viewport"));
-            Debug.Log(skillsPanel.transform.Find("ScrollViewSkills").Find("Viewport").Find("Content"));
 
             skillPanel.transform.SetParent(skillsPanel.transform.Find("ScrollViewSkills").Find("Viewport").Find("Content"));
             setSkillPanel(s, skillPanel.transform);
@@ -179,18 +174,6 @@ public class CharacterPanelManager : MonoBehaviour
 
     private void setSkillPanel(Skill skill, Transform skillPanel)
     {
-        Debug.Log(skill);
-        Debug.Log(skill.name);
-        Debug.Log(skillPanel.childCount);
-        for (int i=0; i<skillPanel.childCount; i++)
-        {
-            Debug.Log(skillPanel.GetChild(i).name);
-        }
-
-        Debug.Log(skillPanel.Find("Name"));
-        Debug.Log(skillPanel.Find("Name").GetComponent<TextMeshProUGUI>());
-
-
         // Name
         skillPanel.Find("Name").GetComponent<TextMeshProUGUI>().text = skill.name;
 

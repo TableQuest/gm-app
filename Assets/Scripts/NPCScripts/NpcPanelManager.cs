@@ -78,8 +78,6 @@ namespace NPCScripts
         {
             _npcOfPanel = npc;
             
-            // TODO fill the panel with the npc infos
-            
             // Name
             gameObject.transform.Find("NamePanel").transform.Find("Name").GetComponent<TextMeshProUGUI>().text = npc.name;
 
@@ -150,12 +148,6 @@ namespace NPCScripts
                     delegate
                     {
                         PrintAttackNpcPanel(npc,s, skillPanel);
-                        //var panelAttack = Instantiate(attackPanelPrefab);
-
-                        //panelAttack.transform.SetParent(GameObject.Find("Canvas").transform);
-                        //panelAttack.transform.localScale = new Vector3(1, 1, 1);
-                        //panelAttack.transform.position = new Vector3(1200, 550, 0);
-                        //panelAttack.GetComponent<NpcAttackManager>().setInfoPanel(npc, s);
                     });
             }
         }
@@ -212,9 +204,6 @@ namespace NPCScripts
                     Destroy(panelAttack);
                 });
             
-
-
-
             // Attack Button 
             panelAttack.transform.Find("AttackButton").GetComponent<Button>().onClick.AddListener(
                 delegate
@@ -231,7 +220,7 @@ namespace NPCScripts
                     var jsonSkill = JsonUtility.ToJson(iSkill);
                     
                     var attackInfo = new AttackMessage(npc.pawnCode,targetId,targetIsNpc, iSkill);
-                    
+                    Debug.Log(JsonUtility.ToJson(attackInfo));
                     _client.client.EmitAsync("attackNpc", JsonUtility.ToJson(attackInfo));
                     Debug.Log("Launch attack "+skill.name+" with healing: "+skill.healing+" and damage "+skill.statModifier+" and target "+targetId);
                     

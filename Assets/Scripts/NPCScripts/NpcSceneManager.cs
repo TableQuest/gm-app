@@ -91,7 +91,6 @@ namespace NPCScripts
             foreach (var npc in _data.placedNpcList)
             {
                 AddNpcToScrollView(npc, scrollViewContentListPlacedNpc, true) ;
-                Debug.Log(_data.placedNpcList);
             }
         }
 
@@ -117,9 +116,7 @@ namespace NPCScripts
             if (panelPresence)
             {
                 Destroy(scrollViewContentNpc.GetChild(0).gameObject);
-                //idCharacterOnPanel = -1;
             }
-            //idCharacterOnPanel = character.id;
 
             // Create the panel 
             var npcPanel = Instantiate(npcPanelPrefab);

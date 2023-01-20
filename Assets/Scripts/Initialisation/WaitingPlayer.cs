@@ -92,6 +92,7 @@ namespace Initialisation
                         if (character != null)
                         {
                             AddCharacterToScrollView(character);
+                            
                         }
                     });
                 });
@@ -123,7 +124,6 @@ namespace Initialisation
                 // Show results as text
                 var jsonResponse = www.downloadHandler.text;
                 var characterList = JsonUtility.FromJson<ListCharacter>(jsonResponse);
-                Debug.Log(jsonResponse);
                 
                 foreach (var chttp in characterList.characterList)
                 {
