@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 
 public class Npc
@@ -10,8 +11,9 @@ public class Npc
     public string description;
     public string image;
     public string pawnCode;
+    public List<Skill> skills;
 
-    public Npc(string id, string name, int lifeMax, int life, string description, string image)
+    public Npc(string id, string name, int lifeMax, int life, string description, string image, List<Skill> skills)
     {
         this.id = id;
         this.name = name;
@@ -20,6 +22,7 @@ public class Npc
         this.description = description;
         this.image = image;
         this.pawnCode = null;
+        this.skills = skills;
     }
 }
 
