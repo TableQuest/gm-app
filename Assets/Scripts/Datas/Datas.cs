@@ -26,5 +26,5 @@ public class Datas : MonoBehaviour
 
 public enum GameState
 {
-    INIT, FREE, RESTRICTED, TURN
+    INIT, FREE, RESTRICTED, INIT_TURN_ORDER, TURN_ORDER
 }

@@ -54,8 +54,11 @@ public class ModeListener : MonoBehaviour
                     case "RESTRICTED":
                         datas.gameState = GameState.RESTRICTED;
                         break;
-                    case "TURN":
-                        datas.gameState = GameState.TURN;
+                    case "INIT_TURN_ORDER":
+                        datas.gameState = GameState.INIT_TURN_ORDER;
+                        break;
+                    case "TURN": // what is send when all the dice where launch 
+                        datas.gameState = GameState.TURN_ORDER;
                         break;
                     default:
                         break;

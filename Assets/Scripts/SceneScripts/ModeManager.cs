@@ -94,8 +94,14 @@ public class ModeManager : MonoBehaviour
     private void sendStateTurn()
     {
         client.EmitAsync("switchState", "TURN");
-        datas.gameState = GameState.TURN;
+        datas.gameState = GameState.INIT_TURN_ORDER;
         Debug.Log("switchState TURN");
+    }
+
+    private void endSkipTurn()
+    {
+        client.EmitAsync("nextTurn");
+        Debug.Log("Skip turn");
     }
 
 }
