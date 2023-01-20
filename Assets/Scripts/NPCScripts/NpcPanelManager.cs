@@ -220,8 +220,9 @@ namespace NPCScripts
                 delegate
                 {
                     var dropdown = panelAttack.transform.Find("DropdownTarget").GetComponent<TMP_Dropdown>();
-
-                    var targetId = dropdown.options[dropdown.value].text.Split(" : ")[0];
+                    var targetIsNpc = (dropdown.options[dropdown.value].text.Split(" : ")[0] == "N");
+ 
+                    var targetId = dropdown.options[dropdown.value].text.Split(" : ")[1];
                     
                     var newDamage = int.Parse(panelAttack.transform.Find("DamageField").GetComponent<TMP_InputField>().text);
                     var newHealing = (panelAttack.transform.Find("DropdownType").GetComponent<TMP_Dropdown>().value == 0);
@@ -229,7 +230,7 @@ namespace NPCScripts
                     var iSkill = new SkillInfo(skill.id, skill.name, skill.manaCost, skill.range, skill.maxTarget, skill.type, newDamage, newHealing, skill.image);
                     var jsonSkill = JsonUtility.ToJson(iSkill);
                     
-                    var attackInfo = new AttackMessage(npc.pawnCode,targetId, iSkill);
+                    var attackInfo = new AttackMessage(npc.pawnCode,targetId,targetIsNpc, iSkill);
                     
                     _client.client.EmitAsync("attackNpc", JsonUtility.ToJson(attackInfo));
                     Debug.Log("Launch attack "+skill.name+" with healing: "+skill.healing+" and damage "+skill.statModifier+" and target "+targetId);
@@ -267,14 +268,14 @@ namespace NPCScripts
             foreach (var oNpc in _data.placedNpcList)
             {
                 var option = new TMP_Dropdown.OptionData();
-                option.text = oNpc.pawnCode+" : "+oNpc.name;
+                option.text = "N : "+oNpc.pawnCode+" : "+oNpc.name;
                 //option.image = Resources.Load(oNpc.image);
                 dropdownOptions.Add(option);
             }
             foreach (var character in _data.charactersList)
             {
                 var option = new TMP_Dropdown.OptionData();
-                option.text = character.id+" : "+character.name;
+                option.text = "P : "+character.playerId+" : "+character.name;
                 //option.image = Resources.Load(character.image);
                 dropdownOptions.Add(option);
             }
@@ -322,12 +323,14 @@ public class AttackMessage
 {
     public string launchId;
     public string targetId;
+    public bool targetIsNpc;
     public SkillInfo skill;
 
-    public AttackMessage(string launchId, string targetId, SkillInfo skill)
+    public AttackMessage(string launchId, string targetId, bool targetIsNpc, SkillInfo skill)
     {
         this.launchId = launchId;
         this.targetId = targetId;
+        this.targetIsNpc = targetIsNpc;
         this.skill = skill;
     }
 }

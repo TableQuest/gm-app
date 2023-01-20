@@ -84,6 +84,7 @@ namespace NPCScripts
                 });
             
             // Attack Button 
+            /*
             gameObject.transform.Find("AttackButton").GetComponent<Button>().onClick.AddListener(
                 delegate
                 {
@@ -101,7 +102,7 @@ namespace NPCScripts
                     Debug.Log("Launch attack "+skill.name+" with healing: "+skill.healing+" and damage "+skill.statModifier+" and target "+targetId);
                     Destroy(gameObject);
                 });
-            
+            */
             // Save Button 
             gameObject.transform.Find("SaveButton").GetComponent<Button>().onClick.AddListener(
                 delegate
