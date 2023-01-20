@@ -9,16 +9,24 @@ public class Skill
     public int manaCost;
     public int range;
     public int maxTarget;
+    public string type;
     public int statModifier;
+    public bool healing;
+    public string image;
 
-    public Skill(int id, string name, int manaCost, int range, int maxTarget, int statModifier)
+    public Skill(int id, string name, int manaCost, 
+        int range, int maxTarget, string type,
+        int statModifier, bool healing, string image)
     {
         this.id = id;
         this.name = name;
         this.manaCost = manaCost;
         this.range = range;
         this.maxTarget = maxTarget;
+        this.type = type;
         this.statModifier = statModifier;
+        this.healing = healing;
+        this.image = image;
     }
 
 
