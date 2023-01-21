@@ -75,7 +75,7 @@ public class CharacterListener : MonoBehaviour
                 updateInfoCharacter(cui.playerId, cui.variable, cui.value);
                 Character character = initDatas.charactersList.Find(c => c.playerId == cui.playerId);
                 //GameObject.Find("Canvas").GetComponent<CharacterSceneManager>().PrintCharacterPanel(character);
-
+                Debug.Log("update info character");
             });
 
         });

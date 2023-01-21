@@ -57,7 +57,7 @@ public class ModeListener : MonoBehaviour
                     case "INIT_TURN_ORDER":
                         datas.gameState = GameState.INIT_TURN_ORDER;
                         break;
-                    case "TURN": // what is send when all the dice where launch 
+                    case "TURN_ORDER": // what is send when all the dice where launch 
                         datas.gameState = GameState.TURN_ORDER;
                         break;
                     default:
