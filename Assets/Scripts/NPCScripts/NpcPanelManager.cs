@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Random = System.Random;
 
 namespace NPCScripts
 {
@@ -24,6 +25,7 @@ namespace NPCScripts
         [SerializeField] private GameObject scrollViewContentSkills;
         [SerializeField] private GameObject skillPanelPrefab;
         [SerializeField] private GameObject attackPanelPrefab;
+        [SerializeField] private GameObject dicePanelPrefab;
         // Datas
         private Datas _data;
         private GameObject _dataObject;
@@ -114,7 +116,7 @@ namespace NPCScripts
                 addNpcButton.onClick.AddListener(
                     delegate
                     {
-                        Debug.Log("Roll dice ");
+                        printDicePanel(npc);
                     });
             }
             else
@@ -152,6 +154,51 @@ namespace NPCScripts
             }
         }
 
+        private void printDicePanel(Npc npc)
+        {
+
+            var dicePanel = Instantiate(dicePanelPrefab);
+
+            var canvas = GameObject.Find("Canvas").GetComponent <Canvas>();
+            dicePanel.transform.SetParent(canvas.transform);
+            dicePanel.transform.localScale = new Vector3(1, 1, 1);
+            dicePanel.transform.position = new Vector3(1200, 500, 0);
+            
+            var random = new Random();
+
+            // exit button 
+            dicePanel.transform.Find("TitlePanel").Find("ExitButton").GetComponent<Button>().onClick.AddListener(
+                delegate
+                {
+                    Destroy(dicePanel);
+                });
+            
+            // npc name
+            dicePanel.transform.Find("TitlePanel").Find("NpcName").GetComponent<TextMeshProUGUI>().text = npc.name;
+
+            // roll button 
+            dicePanel.transform.Find("RollButton").GetComponent<Button>().onClick.AddListener(delegate
+            {
+                var result = random.Next(1, 21);
+                dicePanel.transform.Find("ResultPanel").Find("Result").GetComponent<TextMeshProUGUI>().text =
+                    result.ToString();
+                Debug.Log("Dice "+result+"/20 for npc"+npc.pawnCode);
+            });
+            
+            // send button 
+            dicePanel.transform.Find("ResultPanel").Find("SendButton").GetComponent<Button>().onClick.AddListener(
+                delegate
+                {
+                    var result = dicePanel.transform.Find("ResultPanel").Find("Result").GetComponent<TextMeshProUGUI>()
+                        .text;
+                    var message = new DiceMessage(npc.pawnCode, 4, int.Parse(result));
+                    _client.client.EmitAsync("dice", JsonUtility.ToJson(message));
+                    Debug.Log("Send dice "+result+"/20 for npc"+npc.pawnCode);
+                    Destroy(dicePanel);
+                });
+
+        }
+        
         private void PrintAddNpcPanel(Npc npc)
         {
             var addNpcPanel = Instantiate(addNpcPanelPrefab);
@@ -321,5 +368,21 @@ public class AttackMessage
         this.targetId = targetId;
         this.targetIsNpc = targetIsNpc;
         this.skill = skill;
+    }
+}
+
+[Serializable]
+
+public class DiceMessage
+{
+    public string playerId;
+    public int diceId;
+    public int value;
+
+    public DiceMessage(string playerId, int diceId, int value)
+    {
+        this.playerId = playerId;
+        this.diceId = diceId;
+        this.value = value;
     }
 }

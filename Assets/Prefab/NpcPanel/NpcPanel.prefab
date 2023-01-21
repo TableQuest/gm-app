@@ -3976,6 +3976,7 @@ MonoBehaviour:
   scrollViewContentSkills: {fileID: 3155830939172282391}
   skillPanelPrefab: {fileID: 7102207182790863553, guid: 609ed32ef0a4e7f4086f676cdcd6a82a, type: 3}
   attackPanelPrefab: {fileID: 3155830939427751703, guid: 305ea0e1d4daead4aa3ea577c715c0de, type: 3}
+  dicePanelPrefab: {fileID: 3155830939427751703, guid: 305ea0e1d4daead4aa3ea577c715c0de, type: 3}
 --- !u!1 &3155830939554955799
 GameObject:
   m_ObjectHideFlags: 0
