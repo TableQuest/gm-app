@@ -75,6 +75,13 @@ public class ModeManager : MonoBehaviour
         FreeButoon.onClick.AddListener(delegate { sendStateFree(); });
         RestrictedButoon.onClick.AddListener(delegate { sendStateRestricted(); });
         TurnButoon.onClick.AddListener(delegate { sendStateTurn(); });
+
+        gameObject.transform.Find("GlobalPanel").Find("ScenePanel").Find("TurnButton")
+            .GetComponent<Button>().onClick.AddListener(
+                delegate
+                {
+                    endSkipTurn();
+                });
     }
 
     private void sendStateFree()
@@ -93,9 +100,15 @@ public class ModeManager : MonoBehaviour
 
     private void sendStateTurn()
     {
-        client.EmitAsync("switchState", "TURN");
-        datas.gameState = GameState.TURN;
-        Debug.Log("switchState TURN");
+        client.EmitAsync("switchState", "INIT_TURN_ORDER");
+        datas.gameState = GameState.INIT_TURN_ORDER;
+        Debug.Log("switchState INIT TURN ORDER");
+    }
+
+    private void endSkipTurn()
+    {
+        client.EmitAsync("nextTurn");
+        Debug.Log("Skip turn");
     }
 
 }
