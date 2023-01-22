@@ -78,6 +78,12 @@ namespace NPCScripts
                 _initData.placedNpcList[^1].pawnCode = pawnCode;
                 Debug.Log("Set pawncode "+pawnCode+" to last npc");
             });
+            
+            _client.On("deathNpc", (data) =>
+            {
+                var pawnCode = data.GetValue().ToString();
+                _initData.placedNpcList.Find(n => n.pawnCode == pawnCode).life = 0;
+            });
 
         }
 
