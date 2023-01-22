@@ -41,7 +41,7 @@ namespace Initialisation
             StartCoroutine(GetAllPlacedNpc());
             StartCoroutine(GetAllNpc());
             StartCoroutine(GetTestAlreadyChosenCharacters());
-            StartCoroutine(MyUpdate());
+            //StartCoroutine(MyUpdate());
 
         }
 
