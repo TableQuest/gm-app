@@ -104,9 +104,29 @@ namespace NPCScripts
             });
             
             // Image
-            var sprite = Resources.Load<Sprite>(npc.image);
-            basicInfoPanel.Find("Image").GetComponent<Image>().sprite = sprite;
-
+            // Button remove body
+            
+            var removeButton = gameObject.transform.Find("DeadPanel").Find("RemoveButton").GetComponent<Button>();
+            removeButton.onClick.AddListener(
+                delegate
+                {
+                    _client.client.EmitAsync("removeNpc", npc.pawnCode);
+                });
+            if (npc.life <= 0)
+            {
+                removeButton.enabled = true;
+                Debug.Log(npc.image+"_grey");
+                var sprite = Resources.Load<Sprite>(npc.image+"_grey");
+                Debug.Log(sprite);
+                basicInfoPanel.Find("Image").GetComponent<Image>().sprite = sprite;
+            }
+            else
+            {
+                removeButton.enabled = false;
+                var sprite = Resources.Load<Sprite>(npc.image);
+                basicInfoPanel.Find("Image").GetComponent<Image>().sprite = sprite;
+            }
+            
             // Add npc button or dice if npc is placed
             var addNpcButton = gameObject.transform.Find("PlacedPanel").Find("PlacedButton").GetComponent<Button>();
 
