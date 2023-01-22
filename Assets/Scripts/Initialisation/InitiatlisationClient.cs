@@ -23,7 +23,6 @@ public class InitiatlisationClient : MonoBehaviour
             requestURI = "http://localhost:3000";
         }
         Debug.Log("Connection to : " + requestURI);
-        DontDestroyOnLoad(gameObject);
 
         // Create a new thread in order to run the InitSocketThread method
         var thread = new Thread(InitSocketThread);
@@ -31,6 +30,7 @@ public class InitiatlisationClient : MonoBehaviour
         thread.Start();
 
         StartCoroutine(UpdateCoroutine());
+        DontDestroyOnLoad(gameObject);
     }
 
     private IEnumerator UpdateCoroutine()
