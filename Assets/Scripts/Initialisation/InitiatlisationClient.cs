@@ -20,7 +20,7 @@ public class InitiatlisationClient : MonoBehaviour
     {
         if (requestURI == null)
         {
-            requestURI = "http://localhost:3000";
+            requestURI = "http://90.118.234.54:3000";
         }
         Debug.Log("Connection to : " + requestURI);
 
