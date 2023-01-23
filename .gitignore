@@ -74,3 +74,7 @@ crashlytics-build.properties
 # Text Mesh Pro
 /Assets/TextMesh\ Pro/
 
+.idea/
+.vscode
+.vsconfig/
+.DS_Store
